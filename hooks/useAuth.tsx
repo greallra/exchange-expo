@@ -13,6 +13,9 @@ function useAuth() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
         console.log('onAuthStateChanged USER = ', user);
+        if (!user) {
+          return setUser(null)
+        }
         let userDataFromAuth = {
           uid: user.uid,
           accessToken: user.accessToken,
@@ -21,6 +24,8 @@ function useAuth() {
           phoneNumber: user.phoneNumber,
           displayName: user.displayName,
         }
+   
+   
         getOneDoc ('users', user.uid)
         .then(({docSnap}) => {
         //   console.log('get toc', languages); 

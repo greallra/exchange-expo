@@ -6,18 +6,25 @@ import { Button, Input, Text as Ktext } from '@ui-kitten/components';
 
 const Signup = () => {
   return (
-    <View>
+    <View style={styles.appBody}>
+      <Text>Signup</Text>
+      <Text>Signup</Text>
+      <Text>Signup</Text>
       <Text>Signup</Text>
       <Button
         style={{margin: 2, marginTop: 50}}
         status='primary'
         class="mt-4"
-        onPress={() => router.push('/')}
-      >myLog</Button>
+        onPress={() => router.push('/login')}
+      >back</Button>
     </View>
   )
 }
 
 export default Signup
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  appBody: {
+    padding: 10
+  }
+})

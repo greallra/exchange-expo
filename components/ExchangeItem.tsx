@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Text, View } from "react-native";
-// import { Link, useNavigate } from "react-router-dom";
+import { Text, View, Image, StyleSheet } from "react-native";
+import { Link, router } from 'expo-router';
 import { useGlobalContext } from "@/context/GlobalProvider";
 // import { useHover } from '@mantine/hooks';
 // import { Card, Image, Text, Badge, Button, Box, Group, Divider, Alert, Tooltip } from '@mantine/core';
@@ -9,10 +9,8 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 
 // import UserFlag from '@/components/UserFlag'
 // import AvatarGroup from '../components/AvatarGroup'
-// import images from '../assets/images';
+import { images } from '@/constants'
 
-import { ChevronRight, Cloud, Moon, Star, Sun } from '@tamagui/lucide-icons'
-import { ListItem, Separator, XStack, YGroup, Image } from 'tamagui'
 
 interface ExchangeItemProps {
     id: string,
@@ -60,23 +58,59 @@ const ExchangeItem = (props: ExchangeItemProps) => {
     const isHost = props.organizerId === user.id;
 
     return (
-        <YGroup.Item>
-           <YGroup.Item>
-                <ListItem hoverTheme>
-                    <Text>{props.name}</Text>
-                    <Image
-                        source={{
-                            uri: 'https://picsum.photos/200/300',
-                            width: 80,
-                            height: 60,
-                        }}
-                    /> 
-                </ListItem>   
+        <Link style={styles.listItem} href="/exchanges/view/123">
+            <View style={styles.leftCol}>
+                <Image
+                    source={require(`@/assets/images-flags/spanish.png`)}
+                    style={styles.flag}
+                /> 
+           
+                <Image
+                     source={require("@/assets/images-flags/french.png")}
+                     style={styles.flag}
+                /> 
+           
+            </View>
+            <View style={styles.middleCol}>
+                <View><Text>Exchange at {props.name}</Text></View> 
+           
+            </View>
+            <View style={styles.rightCol}>
+                <View><Text>{props.time}</Text></View>
+           
+            </View>
 
-            </YGroup.Item>
-        </YGroup.Item>
+            {/* <Text onPress={() => router.push('')}>test</Text> */}
+        </Link>
     );
 }
 export default ExchangeItem
 
-            
+const styles = StyleSheet.create({
+    listItem: {
+      display: 'flex',
+      flexDirection: 'row',
+      padding: 10,
+      backgroundColor: 'white'
+    },
+    leftCol: {
+      display: 'flex',
+      flexDirection: 'row',
+      marginRight: 10
+    },
+    middleCol: {
+      display: 'flex',
+      flexDirection: 'row',
+      margin: 10
+    },
+    rightCol: {
+      display: 'flex',
+      flexDirection: 'row',
+      margin: 10
+    },
+    flag: {
+        width: 20,
+        height: 20,
+    }
+  });
+  

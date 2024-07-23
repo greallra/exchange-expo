@@ -6,18 +6,18 @@ import GlobalProvider from "@/context/GlobalProvider"
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Layout, Text as KText, Button } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
-import { TamaguiProvider } from 'tamagui'
-import { createTamagui  } from '@tamagui/core'
-import { config } from '@tamagui/config/v3'
+// import { TamaguiProvider } from 'tamagui'
+// import { createTamagui  } from '@tamagui/core'
+// import { config } from '@tamagui/config/v3'
 
 // you usually export this from a tamagui.config.ts file
-const tamaguiConfig = createTamagui(config)
+// const tamaguiConfig = createTamagui(config)
 
 // TypeScript types across all Tamagui APIs
-type Conf = typeof tamaguiConfig
-declare module '@tamagui/core' {
-  interface TamaguiCustomConfig extends Conf {}
-}
+// type Conf = typeof tamaguiConfig
+// declare module '@tamagui/core' {
+//   interface TamaguiCustomConfig extends Conf {}
+// }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -52,17 +52,17 @@ export default function RootLayout() {
   }
   return (
     <GlobalProvider>
-      <IconRegistry icons={EvaIconsPack} />
+       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva.light}>
-      <TamaguiProvider config={tamaguiConfig}>
-        {/* <Text>Root Layout</Text> */}
+     {/* <TamaguiProvider config={tamaguiConfig}> */}
         <Stack>
-            <Stack.Screen name="(private)" options={{ headerShown: false }} />
-            {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
-            <Stack.Screen name="(public)" options={{ headerShown: false }} />
-           <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(public)" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />
+            <Stack.Screen name="settings" options={{ headerShown: false, animation: 'slide_from_right' }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
         </Stack>
-      </TamaguiProvider>
+      {/* </TamaguiProvider> */}
       </ApplicationProvider>
     </GlobalProvider>
   );

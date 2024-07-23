@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, SafeAreaView } from 'react-native'
 import React, { useEffect } from 'react'
 import { Link, router } from 'expo-router';
 import useAuth from "@/hooks/useAuth";
-import tw from 'twrnc';
 import { FIREBASE_AUTH, signInWithEmailAndPassword, signOut } from '@/firebase/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -55,7 +54,7 @@ const Login = () => {
 }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.appBody}>
         <View
           className="w-full flex justify-center h-full px-4 my-6"
           // style={{
@@ -72,7 +71,7 @@ const Login = () => {
         {error && <Ktext
           style={styles.text}
           status='danger'
-        >{error}</Ktext>}
+        >{error}</Ktext>} 
         <Button
           style={{marginTop: 20, marginBottom: 20}}
           status='danger'
@@ -103,4 +102,8 @@ const Login = () => {
 
 export default Login
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  appBody: {
+    padding: 10
+  }
+})

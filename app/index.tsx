@@ -24,16 +24,17 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView className="h-full bg-primary">
+    <SafeAreaView className="flex-1 items-center justify-center bg-white">
         {/* <Text>{JSON.stringify(user)}</Text> */}
         <Loader isLoading={loading} />
         <ScrollView contentContainerStyle={{height: '100%'}}>
           <View className="w-full items-center justify-center h-full pa-4">
             <Image 
             source={images.ronanLogo}
-            className="w-20 h-20"
+            // style={{height: 200}}
             resizeMode="contain"
             />
+            <Link href="/profile" style={{color: 'red'}}>profile</Link>
             <Link href="/login" style={{color: 'red'}}>login</Link>
             <Link href="/exchanges" style={{color: 'red'}}>exchanges</Link>
             {/* <Button

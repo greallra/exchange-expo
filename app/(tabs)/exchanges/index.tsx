@@ -4,14 +4,14 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import useLanguages from "@/hooks/useLanguages"
 import useFetch from "@/hooks/useFetch"
 
+
 import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
 import { formatExchange } from "@/common/utils"
 
-import { Text, View } from "react-native";
-import { Button } from '@ui-kitten/components';
-import { ChevronRight, Cloud, Moon, Star, Sun } from '@tamagui/lucide-icons'
-import { ListItem, Separator, XStack, YGroup, Text as TText, Paragraph, YStack } from 'tamagui'
+import { Text, View, StyleSheet } from "react-native";
+import { Button, List, ListItem, Icon } from '@ui-kitten/components';
 import ExchangeItem from '@/components/ExchangeItem';
+
 
 export default function Exchanges() {
   const [loading, setLoading] = useState(true)
@@ -59,11 +59,37 @@ export default function Exchanges() {
         return filteredExchanges
    }
 
+   const renderItemAccessory = (): React.ReactElement => (
+    <Button size='tiny'>
+FOLLOW
+    </Button>
+  );
+  
+   const data = new Array(8).fill({
+    title: 'Title for Item',
+    description: 'Description for Item',
+  });
+
+  const renderItemIcon = (props): IconElement => (
+    <Icon
+      {...props}
+      name='person'
+    />
+  );
+
+  const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
+    <ListItem
+      title={`${item.title} ${index + 1}`}
+      description={`${item.description} ${index + 1}`}
+      accessoryLeft={renderItemIcon}
+      accessoryRight={renderItemAccessory}
+    />
+  );
+  
+
    return (
+    <>  
       <View className='p-4'>
-        <YStack space="$2" alignItems="center"><Paragraph size="$2" fontWeight="800">
-          Exchanges in Dublin
-        </Paragraph></YStack>
           {/* <div className='filter-switch'>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
@@ -91,9 +117,11 @@ export default function Exchanges() {
                           <Text className='mr-1'>{groupedExchange.name}
                           </Text> <Text c="dimmed" size="xs">({groupedExchange.datePretty})</Text>
                       </Text>}
-                                          
-                      <XStack $sm={{ flexDirection: 'column' }} paddingHorizontal="$4" space>
-                        <YGroup alignSelf="center" bordered width={240} size="$5" size="$5" separator={<Separator />}>
+                      {/* <List
+                        style={styles.container}
+                        data={data}
+                        renderItem={renderItem}
+                      />       */}
                           {areGroupedExchanges && groupedExchange.exchanges.map((exchange) => {
                               return <ExchangeItem 
                               id={exchange.id}
@@ -112,8 +140,6 @@ export default function Exchanges() {
                               users={users}
                               />
                           })}
-                        </YGroup>
-                      </XStack>
 {/*                   
                       {!areGroupedExchanges && (!isAttending && !isMyLanguages)  && <Text tt="italic" size="xs" c="dimmed" align="center">No exchanges on this day</Text>}
                       {!areGroupedExchanges && (!isAttending && !isMyLanguages)  &&<Divider variant="dotted"  style={{marginTop: '42px'}}/>} */}
@@ -121,5 +147,12 @@ export default function Exchanges() {
               )
           })}
       </View>
+    </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    maxHeight: 200,
+  },
+});
