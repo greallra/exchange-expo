@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, SafeAreaView } from 'react-native'
 import React from 'react'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { useRoute } from '@react-navigation/native';
@@ -8,7 +8,7 @@ import Header from '@/components/Header'
 
 const TabIcon = ({ icon, color, name, focused}) => {
     return (
-        <View className="items-center justify-center gap-2">
+        <SafeAreaView>
             <Image 
                 source={icon}
                 resizeMode='contain'
@@ -16,7 +16,7 @@ const TabIcon = ({ icon, color, name, focused}) => {
                 className="w-6 h-6"
             />
             <Text className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`}>{name}</Text>
-        </View>
+        </SafeAreaView>
     )
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Text, View, Image, StyleSheet } from "react-native";
+import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Link, router } from 'expo-router';
 import { useGlobalContext } from "@/context/GlobalProvider";
 // import { useHover } from '@mantine/hooks';
@@ -9,7 +9,9 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 
 // import UserFlag from '@/components/UserFlag'
 // import AvatarGroup from '../components/AvatarGroup'
+import { Card, Layout, Text as Ktext, Icon, Divider } from '@ui-kitten/components';
 import { images } from '@/constants'
+import { parseLocation } from '@/common/utils'
 
 
 interface ExchangeItemProps {
@@ -56,57 +58,100 @@ const ExchangeItem = (props: ExchangeItemProps) => {
       
     const isAttending = props.participantIds.includes(user.id);
     const isHost = props.organizerId === user.id;
-
+    
     return (
-        <Link style={styles.listItem} href="/exchanges/view/123">
-            <View style={styles.leftCol}>
-                <Image
-                    source={require(`@/assets/images-flags/spanish.png`)}
-                    style={styles.flag}
-                /> 
-           
-                <Image
-                     source={require("@/assets/images-flags/french.png")}
-                     style={styles.flag}
-                /> 
-           
-            </View>
-            <View style={styles.middleCol}>
-                <View><Text>Exchange at {props.name}</Text></View> 
-           
-            </View>
-            <View style={styles.rightCol}>
-                <View><Text>{props.time}</Text></View>
-           
-            </View>
-
-            {/* <Text onPress={() => router.push('')}>test</Text> */}
-        </Link>
+      <TouchableOpacity style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
+              <View style={styles.leftCol}>
+                <View style={styles.icons}>
+                  <Image
+                      source={images.spanish}
+                      style={[styles.flag, {marginRight: 7}]}
+                  /> 
+                  {/* <Ktext>-</Ktext> */}
+                  <Image
+                      source={images.french}
+                      style={styles.flag}
+                  /> 
+                </View>
+                <View style={[styles.icons, styles.mt]}>
+                  <Icon
+                      style={styles.icon}
+                      fill='#8F9BB3'
+                      name='people-outline'
+                    />
+                   <Ktext numberOfLines={1} style={{ paddingLeft: 5}}>{props.participantIds.length} / {props.capacity}</Ktext>
+                </View>
+              </View>
+              <View style={styles.middleCol}>
+                  <View style={styles.fr}>  
+                    <Icon
+                      style={styles.icon}
+                      fill='#8F9BB3'
+                      name='pricetags'
+                    />
+                    <Ktext numberOfLines={1}>{props.name}</Ktext>
+                  </View> 
+                  <View style={[styles.fr, styles.mt]}>
+                    <Icon
+                      style={styles.icon}
+                      fill='#8F9BB3'
+                      name='pin'
+                    />
+                    <Ktext numberOfLines={1}>{parseLocation(props.location)}</Ktext></View> 
+            
+              </View>
+              <View style={styles.rightCol}>
+                  <Ktext>{props.time}</Ktext>
+                  <Ktext numberOfLines={1}>{props.organizerUnfolded.username}</Ktext>
+              </View>
+    </TouchableOpacity>
     );
 }
 export default ExchangeItem
 
 const styles = StyleSheet.create({
-    listItem: {
-      display: 'flex',
+  fr: {
+    flexDirection: 'row',
+  },
+  mt: {
+    marginTop: 5
+  },
+  link : {
+    padding: 0,
+    width: '100%',
+  },
+  layoutContainer: {
+      width: '100%',
       flexDirection: 'row',
-      padding: 10,
+      flexWrap: 'wrap',
+      paddingVertical: 10,
+      paddingHorizontal: 5,
       backgroundColor: 'white'
     },
     leftCol: {
+      
       display: 'flex',
-      flexDirection: 'row',
+      // flexDirection: 'row',
       marginRight: 10
     },
     middleCol: {
-      display: 'flex',
-      flexDirection: 'row',
-      margin: 10
+      flex: 3,
+      marginRight: 30
     },
     rightCol: {
+      flex: 1,
+      flexDirection: 'reverse',
+      justifyContent: 'space-between',
+      // alignItems: 'flex-end',
+      // margin: 10
+    },
+    icons: {
       display: 'flex',
       flexDirection: 'row',
-      margin: 10
+    },
+    icon: {
+        width: 20,
+        height: 20,
     },
     flag: {
         width: 20,

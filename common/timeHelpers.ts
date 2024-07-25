@@ -8,12 +8,13 @@ function addDaysCustom(days){
     return date.setDate(date.getDate() + days);
   }
 
-for(let x = 0; x <=1; x++){
+for(let x = 0; x <=10; x++){
 	let item = {};
   // const fmt =
 	if(x === 0){
   	item.name = 'Today'
     item.date = today
+    item.hideDate = true
     item.datePretty = format(today, 'MM/dd/yyyy')
   } else if(x === 1) {
   	item.name = 'Tomorrow'

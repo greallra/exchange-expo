@@ -50,16 +50,18 @@ export function formatExchange (exchange: object, languages: Array, users: Array
     if (typeof exchange.time === 'object') {
         exchange.timeUnix = format(formatISO(exchange.time.seconds * 1000), 'Pp')
         exchange.timeHour = format(formatISO(exchange.time.seconds * 1000), 'p')
+        exchange.datePretty = format(exchange.time.seconds * 1000, 'MM/dd/yyyy')
     }
     if (typeof exchange.name !== 'string') {
         console.log('exchange', {...exchange});
         exchange.name = "not string"
     }
-
     
     exchange.teachingLanguageUnfolded = getObjectById(exchange.teachingLanguageId, languages)
     exchange.learningLanguageUnfolded = getObjectById(exchange.learningLanguageId, languages)
-    exchange.organizerUnfolded = getObjectById(exchange.organizerId, users)
+    
+    exchange.organizerUnfolded = users.find( item => item.id === exchange.organizerId)
+
     return {
         ...exchange
     }
@@ -77,4 +79,11 @@ export function getUserInitials (user: object) {
         return "XX"
     }
     return user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() 
+}
+
+export function parseLocation (location: object) {
+    if (location.structured_formatting && location.structured_formatting.main_text) {
+        return location.structured_formatting.main_text
+    }
+    return 'Error parsing location'
 }

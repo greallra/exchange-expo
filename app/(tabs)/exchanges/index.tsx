@@ -9,9 +9,8 @@ import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
 import { formatExchange } from "@/common/utils"
 
 import { Text, View, StyleSheet } from "react-native";
-import { Button, List, ListItem, Icon } from '@ui-kitten/components';
+import { Button, List, ListItem, Icon, Text as KText, Divider, IconElement, Tab, TabBar, TabBarProps } from '@ui-kitten/components';
 import ExchangeItem from '@/components/ExchangeItem';
-
 
 export default function Exchanges() {
   const [loading, setLoading] = useState(true)
@@ -19,11 +18,18 @@ export default function Exchanges() {
   const { languages } = useLanguages();
   const { data: users } = useFetch('users')
   let { data: exchanges } = useFetch('exchanges')
-  const {  user } = useGlobalContext();
+  const { user } = useGlobalContext();
+  const [isMyExchanges, setIsMyExchanges] = useState(true);
   const [isMyLanguages, setIsMyLanguages] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
 
-  useEffect(() => {
+  const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
+    const [selectedIndex, setSelectedIndex] = useState(initialState);
+    return { selectedIndex, onSelect: setSelectedIndex };
+  };
+  const topState = useTabBarState();
+
+  function setExchanges() {
     if (exchanges.length > 0 && languages.length > 0) {
         exchanges = exchanges.map(exchange => formatExchange(exchange, languages, users))
         console.log('exchanges', exchanges);
@@ -37,14 +43,32 @@ export default function Exchanges() {
         setExchangesGroupedByDate(groupedByDateExchanges)
         setLoading(false)
     }
-  }, [languages, exchanges, isMyLanguages, isAttending])
+  }
+
   useEffect(() => {
-    console.log('exchangesGroupedByDate', exchangesGroupedByDate);
+    setExchanges()
+  }, [languages, exchanges, isMyLanguages, isAttending])
+
+  useEffect(() => {
+    if (topState.selectedIndex === 2) {
+      setIsMyExchanges(true)  
+    } else {
+      setIsMyExchanges(false)
+    }
+    console.log('topState', topState.selectedIndex, isMyLanguages);
     
-  }, [exchangesGroupedByDate])
+  }, [topState])
+  // useEffect(() => {
+  //   console.log('isMyLanguages', isMyLanguages);
+  //   setExchanges()
+  // }, [isMyLanguages])
 
   function filterExchanges (exchanges){
     let filteredExchanges = exchanges
+    console.log('isMyExchanges isMyExchanges', isMyExchanges);
+        if (isMyExchanges) {
+            filteredExchanges = exchanges.filter( exchange => exchange.organizerId === user.id)
+        }
         if (isMyLanguages) {
             filteredExchanges = exchanges.filter( exchange => {
                 return [exchange.teachingLanguageId, exchange.learningLanguageId].includes(user.teachingLanguageId) &&
@@ -58,38 +82,38 @@ export default function Exchanges() {
         }
         return filteredExchanges
    }
-
-   const renderItemAccessory = (): React.ReactElement => (
-    <Button size='tiny'>
-FOLLOW
-    </Button>
-  );
   
    const data = new Array(8).fill({
     title: 'Title for Item',
     description: 'Description for Item',
   });
 
-  const renderItemIcon = (props): IconElement => (
+  const PersonIcon = (props): IconElement => (
+    <Icon {...props}
+      name='person-outline'
+    />
+  );
+  
+  const GlobeIcon = (props): IconElement => (
     <Icon
       {...props}
-      name='person'
+      name='globe-2-outline'
+    />
+  );
+  
+  const PeopleIcon = (props): IconElement => (
+    <Icon
+      {...props}
+      name='people-outline'
     />
   );
 
-  const renderItem = ({ item, index }: { item: IListItem; index: number }): React.ReactElement => (
-    <ListItem
-      title={`${item.title} ${index + 1}`}
-      description={`${item.description} ${index + 1}`}
-      accessoryLeft={renderItemIcon}
-      accessoryRight={renderItemAccessory}
-    />
-  );
+  console.log('topState', topState);
   
 
    return (
     <>  
-      <View className='p-4'>
+      <View style={styles.container}>
           {/* <div className='filter-switch'>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
@@ -105,25 +129,34 @@ FOLLOW
               <Text ml="xs"  size="sm" fw={700}>Language Match</Text>
           </Box></Tooltip>
           </div> */}
-          {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
+          <TabBar {...topState} style={{ padding: 0}}>
+            <Tab icon={PeopleIcon} title="All Exchanges" style={{ padding: 0}}/>
+            <Tab icon={GlobeIcon} title="Map View"/>
+            <Tab icon={PersonIcon} title="My Exchanges"/>
+          </TabBar>
+          {(topState.selectedIndex === 0 || topState.selectedIndex === 2) && exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
               const areGroupedExchanges = groupedExchange.exchanges.length > 0 
               return (
                   <View key={i}>
-                      {areGroupedExchanges && <Text className='flex-ac'>
-                          <Text className='mr-1'>{groupedExchange.name}</Text> 
-                          <Text c="dimmed" size="xs" mt="xxs">({groupedExchange.datePretty})</Text>
-                      </Text>}
-                      {!areGroupedExchanges && (!isAttending && !isMyLanguages) && <Text className='flex-ac'>
-                          <Text className='mr-1'>{groupedExchange.name}
-                          </Text> <Text c="dimmed" size="xs">({groupedExchange.datePretty})</Text>
-                      </Text>}
+                         <>
+
+                          </>
+                      {areGroupedExchanges && 
+                      <KText style={[styles.dateHeader]}>
+                          <KText  category='h5'>{groupedExchange.name}</KText> 
+                          {!groupedExchange.hideDate && <KText style={{ marginLeft: 15}}>({groupedExchange.datePretty})</KText>}
+                      </KText>}
+                      {!areGroupedExchanges && (!isAttending && !isMyLanguages) && <KText className='flex-ac'>
+                          <KText category='h5'>{groupedExchange.name}
+                          </KText> <KText>({groupedExchange.datePretty})</KText>
+                      </KText>}
                       {/* <List
                         style={styles.container}
                         data={data}
                         renderItem={renderItem}
                       />       */}
                           {areGroupedExchanges && groupedExchange.exchanges.map((exchange) => {
-                              return <ExchangeItem 
+                              return <><ExchangeItem 
                               id={exchange.id}
                               key={exchange.id}
                               name={exchange.name} 
@@ -139,10 +172,11 @@ FOLLOW
                               participantIds={exchange.participantIds}
                               users={users}
                               />
+                              <Divider /></>
                           })}
-{/*                   
-                      {!areGroupedExchanges && (!isAttending && !isMyLanguages)  && <Text tt="italic" size="xs" c="dimmed" align="center">No exchanges on this day</Text>}
-                      {!areGroupedExchanges && (!isAttending && !isMyLanguages)  &&<Divider variant="dotted"  style={{marginTop: '42px'}}/>} */}
+                  
+                      {!areGroupedExchanges && (!isAttending && !isMyLanguages)  && <KText appearance='hint'>No exchanges on this day</KText>}
+                      {/* {!areGroupedExchanges && (!isAttending && !isMyLanguages)  &&<Divider variant="dotted"  style={{marginTop: '42px'}}/>} */}
                   </View>
               )
           })}
@@ -153,6 +187,14 @@ FOLLOW
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 200,
+    backgroundColor: 'white',
+    padding: 10,
+    height: '100%',
   },
+  dateHeader: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
