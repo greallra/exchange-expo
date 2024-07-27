@@ -13,8 +13,8 @@ import { postDoc } from '@/firebase/apiCalls'
 import { validateForm } from '@/services/formValidation'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { Text as KText, Spinner } from '@ui-kitten/components';
+import { Text, View, StyleSheet, ScrollView, } from "react-native";
+import { Text as KText, Spinner, Layout } from '@ui-kitten/components';
 
 export default function CreateExchange (props) {
   // const navigate = useNavigate();
@@ -85,21 +85,23 @@ export default function CreateExchange (props) {
     }, [languages])
     
 
-    return (<ScrollView>
-              {!busy ? 
-                <Form 
-                    fields={fields}
-                    user={user} 
-                    onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
-                    validateForm={handleValidateForm} 
-                    error={error} 
-                    formValid={formValid}
-                /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
-              }
-              {error && <KText
-                status='danger'
-              >{error}</KText>}
-              
-         </ScrollView>)
+    return (
+    <Layout level="4">
+      <ScrollView>
+        {!busy ? 
+          <Form 
+              fields={fields}
+              user={user} 
+              onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
+              validateForm={handleValidateForm} 
+              error={error} 
+              formValid={formValid}
+          /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
+        }
+        {error && <KText
+          status='danger'
+        >{error}</KText>} 
+    </ScrollView>
+  </Layout>)
 }
 

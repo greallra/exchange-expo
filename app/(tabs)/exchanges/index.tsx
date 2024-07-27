@@ -104,7 +104,7 @@ export default function Exchanges() {
 
    return (
     <>  
-      <View style={styles.container}>
+      <Layout style={styles.container} level='4'>
           {/* <div className='filter-switch'>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
@@ -125,18 +125,18 @@ export default function Exchanges() {
             <Tab icon={<Icon name='globe-outline' />} title="Map View" style={{ padding: 0}}/>
             <Tab icon={<Icon name='person-outline' />} title="My Exchanges" style={{ padding: 0}}/>
           </TabBar> */}
-          <Layout style={[styles.fc, { marginBottom: 10 }]}>
-            <CheckBox style={styles.checkbox} status='primary' {...isMyLanguages}>
+          <View style={[styles.fc, { marginBottom: 10 }]}>
+            <CheckBox style={styles.checkbox} status='danger' {...isMyLanguages}>
               <KText category='h1'>My Languages</KText>
             </CheckBox>
-            <CheckBox style={styles.checkbox} status='primary' {...isMyExchanges}>
+            <CheckBox style={styles.checkbox} status='danger' {...isMyExchanges}>
               My Exchanges
             </CheckBox>
-            <CheckBox style={styles.checkbox} status='primary' {...isAttending}>
+            <CheckBox style={styles.checkbox} status='danger' {...isAttending}>
               Attending
             </CheckBox>
-          </Layout>
-          <Divider style={{ marginVertical: 5, paddingVertical: 0.5, }}/>
+          </View>
+          <Divider style={{ marginVertical: 5, paddingVertical: 0.5, height: 1, backgroundColor: '#C5CEE0'}}/>
           <ScrollView>
           {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
               const areGroupedExchanges = groupedExchange.exchanges.length > 0 
@@ -187,7 +187,7 @@ export default function Exchanges() {
               )
           })}
           </ScrollView>
-      </View>
+      </Layout>
     </>
   )
 }
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   container: {
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     padding: 10,
     height: '100%',
   },

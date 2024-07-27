@@ -11,7 +11,7 @@ const Header = () => {
     console.log('headerState', JSON.stringify(headerState, null, 2))
 
     return (
-    <Layout style={styles.header} level='1'>
+    <Layout style={styles.header} level='4'>
         {headerState.leftside === 'arrow' ? <Link href="/exchanges">
             <Icon
                 style={styles.icon}
@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: 'space-between', 
         alignItems: 'center',   
-        borderBottomWidth: 1,    
-        borderBottomColor: 'lightgrey',
+        // borderBottomWidth: 1,    
+        // borderBottomColor: 'lightgrey',
     },
     icon: {
         width: 32,

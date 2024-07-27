@@ -127,7 +127,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             selectedIndex={p.value}
             onChange={index => handleDirectChange(index)}
         >
-            {p.options.map( option => <Radio key={option}>{option}</Radio>)}
+            {p.options.map( option => <Radio key={option} status='warning'>{option}</Radio>)}
         </RadioGroup>
         </>)}    
         {p.type === 'radio2' && (
@@ -139,7 +139,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             onChange={index => handleDirectChange(p.options.find( option => option.index === index))}
         >
                
-            {p.options.map( option => <Radio key={option}>{option.name}</Radio>)}
+            {p.options.map( option => <Radio key={option} status='warning'>{option.name}</Radio>)}
         </RadioGroup>
         </>)}    
         {p.type === 'datetime' && 

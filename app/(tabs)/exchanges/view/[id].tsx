@@ -184,7 +184,7 @@ export default function ViewExchange({ navigation }) {
         style={{ backgroundColor: 'powderblue',  width: '100%',}}
       />
     }
-    <Layout style={styles.container}>
+    <Layout style={styles.container} level='4'>
       <KText
         style={styles.text}
         category='h6'

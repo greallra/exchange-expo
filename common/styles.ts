@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     publicScreen: {
         padding: 10,
-        backgroundColor: '#D4D4D4',
+        // backgroundColor: '#D4D4D4',
         height: '100%'
     },
     formWrapper: {

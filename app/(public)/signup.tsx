@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import { Link, router } from 'expo-router';
 import React from 'react'
-import { Button, Input, Text as KText, Spinner } from '@ui-kitten/components';
+import { Button, Input, Text as KText, Spinner, Layout } from '@ui-kitten/components';
 import { useEffect, useState } from 'react'
 import Form from '@/components/forms/Form'
 import useAuth from "@/hooks/useAuth";
@@ -78,30 +78,32 @@ useEffect(() => {
 
 
   return (
-    <ScrollView style={styles.publicScreen}>
-        <KText category='h6'>Sign Up</KText>
-        {!busy ? <Form 
-            fields={formFields} 
-            onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
-            validateForm={handleValidateForm} 
-            error={error} 
-            formValid={formValid}
-            isLoading={loading}
-        /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>}
-        {error &&  <KText
-            status='danger'
-          >{error}</KText>}
-          
-        <KText
-          appearance='hint'
-          style={{ margin: 2, marginTop: 10, textAlign: 'center'}}
-        >or</KText>
-        <KText
-          style={{height: 100, margin: 2, marginTop: 10, textAlign: 'center'}}
-          status='primary'
-          onPress={() => router.push('/login')}
-        >Login</KText>
-    </ScrollView>
+    <Layout level="4">
+      <ScrollView style={styles.publicScreen}>
+          <KText category='h6'>Sign Up</KText>
+          {!busy ? <Form 
+              fields={formFields} 
+              onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
+              validateForm={handleValidateForm} 
+              error={error} 
+              formValid={formValid}
+              isLoading={loading}
+          /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>}
+          {error &&  <KText
+              status='danger'
+            >{error}</KText>}
+            
+          <KText
+            appearance='hint'
+            style={{ margin: 2, marginTop: 10, textAlign: 'center'}}
+          >or</KText>
+          <KText
+            style={{height: 100, margin: 2, marginTop: 10, textAlign: 'center'}}
+            status='primary'
+            onPress={() => router.push('/login')}
+          >Login</KText>
+      </ScrollView>
+    </Layout>
   )
 }
 

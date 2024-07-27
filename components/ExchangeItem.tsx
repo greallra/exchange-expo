@@ -60,7 +60,8 @@ const ExchangeItem = (props: ExchangeItemProps) => {
     const isHost = props.organizerId === user.id;
     
     return (
-      <TouchableOpacity key={props.id} style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
+      <Card>
+        <TouchableOpacity key={props.id} style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
               <View style={styles.leftCol}>
                 <View style={styles.icons}>
                   <Image
@@ -103,8 +104,9 @@ const ExchangeItem = (props: ExchangeItemProps) => {
               <View style={styles.rightCol}>
                   <Ktext>{props.time}</Ktext>
                   <Ktext numberOfLines={1}>{safeParse('organizerUnfolded', props.organizerUnfolded)}</Ktext>
-              </View>
-    </TouchableOpacity>
+              </View>  
+      </TouchableOpacity>
+    </Card>
     );
 }
 export default ExchangeItem
@@ -124,8 +126,8 @@ const styles = StyleSheet.create({
       width: '100%',
       flexDirection: 'row',
       flexWrap: 'wrap',
-      paddingVertical: 10,
-      paddingHorizontal: 5,
+      // paddingVertical: 10,
+      // paddingHorizontal: 5,
       backgroundColor: 'white'
     },
     leftCol: {

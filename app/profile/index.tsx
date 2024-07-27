@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useRoute } from '@react-navigation/native';
 import Header from '@/features/header/Header'
-import { Button, Spinner, Text as KText } from '@ui-kitten/components';
+import { Button, Spinner, Text as KText, Layout } from '@ui-kitten/components';
 import { signOut, FIREBASE_AUTH } from '@/firebase/firebaseConfig';
 import Form from '@/components/forms/Form'
 
@@ -16,9 +16,6 @@ import { userFormFields } from '@/common/formFields'
 import { validateForm } from '@/services/formValidation'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataSignup } from '@/common/formHelpers'
 import { useToast } from "react-native-toast-notifications";
-// import { useDisclosure } from '@mantine/hooks';
-// import { Modal, Button, Alert } from '@mantine/core';
-// import { IconInfoCircle } from '@tabler/icons-react';
 import useLanguages from '@/hooks/useLanguages';
 import { updateOneDoc, getOneDoc, deleteMultipleDocs } from '@/firebase/apiCalls'
 
@@ -110,32 +107,30 @@ const Profile = () => {
   }, [languages])
 
   return (
-    <ScrollView>
-      <Header />
-      <View>
-              {!busy ? 
-                <Form 
-                    fields={fields}
-                    user={user} 
-                    onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
-                    validateForm={handleValidateForm} 
-                    error={error} 
-                    formValid={formValid}
-                /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
-              }
-              {error && <KText
-                status='danger'
-              >{error}</KText>}
+    <Layout level='4'>
+      <ScrollView style={{width: '100%', height: '100%'}}>
+        <Header />
+        {!busy ? 
+          <Form 
+              fields={fields}
+              user={user} 
+              onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
+              validateForm={handleValidateForm} 
+              error={error} 
+              formValid={formValid}
+          /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
+        }
+        {error && <KText
+          status='danger'
+        >{error}</KText>}
+        <Button
+          style={{margin: 2}}
+          status='danger'
+          onPress={handleLogout}
+        >Logout</Button> 
 
-      </View>
-
-      <Button
-        style={{margin: 2}}
-        status='danger'
-        onPress={handleLogout}
-      >Logout</Button> 
-
-    </ScrollView>
+      </ScrollView>
+    </Layout>
   )
 }
 

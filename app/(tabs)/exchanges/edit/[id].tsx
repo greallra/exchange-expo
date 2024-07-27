@@ -13,7 +13,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
 import { useToast } from "react-native-toast-notifications";
 
-import { Text as KText, Spinner, IndexPath } from '@ui-kitten/components';
+import { Text as KText, Spinner, IndexPath, Layout } from '@ui-kitten/components';
 
 export default function EditExchange() {
   // const navigate = useNavigate();
@@ -121,23 +121,27 @@ export default function EditExchange() {
     fetchData(id)
   }, [id]); 
 
-  return (<ScrollView>
-    {!busy ? 
-      <Form 
-          fields={fields}
-          user={user} 
-          onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
-          validateForm={handleValidateForm} 
-          error={error} 
-          formValid={formValid}
-          isLoading={isLoading}
-      /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
-    }
-    {error && <KText
-      status='danger'
-    >{error}</KText>}
-    
-</ScrollView>)
+  return (
+  <Layout level='4'>
+    <ScrollView>
+      {!busy ? 
+        <Form 
+            fields={fields}
+            user={user} 
+            onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
+            validateForm={handleValidateForm} 
+            error={error} 
+            formValid={formValid}
+            isLoading={isLoading}
+        /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
+      }
+      {error && <KText
+        status='danger'
+      >{error}</KText>}
+      
+  </ScrollView>
+</Layout>
+)
 }
 
 const styles = StyleSheet.create({

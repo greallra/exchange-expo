@@ -5,7 +5,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Loader from '@/components/Loader'
 import { images } from '@/constants'
-import { Button } from '@ui-kitten/components';
+import { Button, Layout } from '@ui-kitten/components';
 
 
 export default function RootLayout() {
@@ -27,7 +27,7 @@ export default function RootLayout() {
     <SafeAreaView>
         <Loader isLoading={loading} />
         <ScrollView contentContainerStyle={{height: '100%'}}>
-          <View style={styles.container}>
+          <Layout style={styles.container}  level='4'>
             {/* <Image 
             source={images.ronanLogo}
             style={{height: '100%'}}
@@ -44,7 +44,7 @@ export default function RootLayout() {
             <Link href="/login">
               <Button
                 style={{margin: 2,}}
-                status='danger'
+                status='primary'
                 onPress={() => router.push('/login')}
               >Login</Button>
             </Link>
@@ -57,7 +57,7 @@ export default function RootLayout() {
               >Signup</Button>
             </Link>
             </View>
-          </View>
+          </Layout>
         </ScrollView>
 
     </SafeAreaView>
@@ -66,7 +66,7 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D4D4D4',
+    // backgroundColor: '#D4D4D4',
     alignItems: 'center',
     justifyContent: 'center',
   },

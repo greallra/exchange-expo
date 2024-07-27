@@ -7,7 +7,7 @@ import styles from '@/common/styles'
 import { setLoading } from '@/features/loading/loadingSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { Button, Input, Text as Ktext, Spinner } from '@ui-kitten/components';
+import { Button, Input, Text as Ktext, Spinner, Layout } from '@ui-kitten/components';
 import { PasswordInput } from '@/components/forms/PasswordInput'
 
 const Login = () => {
@@ -43,36 +43,38 @@ const Login = () => {
 
   return (
     <SafeAreaView>
-        <ScrollView style={styles.publicScreen}>
-          <Ktext category='h1'>Log In</Ktext>
-          <Input
-            placeholder='Write your email'
-            label='Email'
-            value={email}
-            onChangeText={nextValue => setEmail(nextValue)}
-          />
-          <PasswordInput value={password} setValue={nextValue => setPassword(nextValue)}/>
-          {error && <Ktext
-            style={styles.text}
-            status='danger'
-          >{error}</Ktext>} 
-          <Button 
-            style={{marginTop: 20, marginBottom: 20}}
-            disabled={loading} 
-            onPress={handleLogin}
-            appearance={loading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
-            {!loading && 'Login'}
-        </Button>
-          <View style={{height: 100, marginTop: 20, marginBottom: 20}}>
-            <Ktext>or</Ktext>
-            <Ktext
+        <Layout level='4' style={styles.publicScreen}>
+          <ScrollView>
+            <Ktext category='h1'>Log In</Ktext>
+            <Input
+              placeholder='Write your email'
+              label='Email'
+              value={email}
+              onChangeText={nextValue => setEmail(nextValue)}
+            />
+            <PasswordInput value={password} setValue={nextValue => setPassword(nextValue)}/>
+            {error && <Ktext
+              style={styles.text}
+              status='danger'
+            >{error}</Ktext>} 
+            <Button 
               style={{marginTop: 20, marginBottom: 20}}
-              status='primary'
-              onPress={() => router.push('/signup')}
-              >Sign Up
-            </Ktext>
+              disabled={loading} 
+              onPress={handleLogin}
+              appearance={loading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
+              {!loading && 'Login'}
+            </Button>
+            <View style={{height: 100, marginTop: 20, marginBottom: 20}}>
+              <Ktext>or</Ktext>
+              <Ktext
+                style={{marginTop: 20, marginBottom: 20}}
+                status='primary'
+                onPress={() => router.push('/signup')}
+                >Sign Up
+              </Ktext>
           </View>
-      </ScrollView>
+          </ScrollView>
+        </Layout>
     </SafeAreaView>
   )
 }
