@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import GlobalProvider from "@/context/GlobalProvider"
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Layout, Text as KText, Button, Icon } from '@ui-kitten/components';
+import { default as theme } from '@/custom-theme.json';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { ToastProvider } from 'react-native-toast-notifications'
 import { Provider } from 'react-redux'

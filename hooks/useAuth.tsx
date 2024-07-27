@@ -14,7 +14,7 @@ function useAuth() {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
         console.log('onAuthStateChanged USER = ', user);
         if (!user) {
-          // setLoading(false)
+          setLoading(false)
           return setUser(null)
         }
         let userDataFromAuth = {
@@ -35,11 +35,11 @@ function useAuth() {
           console.log('languages', languages);
           console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
           setUser(formatUserData(combinedAuthAndCollection, languages))
-          // setLoading(false)
+          setLoading(false)
         })
         .catch((e) => { 
           console.log(e)
-          // setLoading(false)
+          setLoading(false)
         })
       });
     return unsubscribe;
@@ -61,7 +61,7 @@ function useAuth() {
   };
 
 
-  return { user, loading, logout, login };
+  return { user, loading, logout, login, setLoading };
 }
 
 export default useAuth

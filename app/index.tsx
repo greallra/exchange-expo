@@ -18,8 +18,6 @@ export default function RootLayout() {
     console.log(error);
     
   }
-
-
   if (user) {
     return <Redirect href="exchanges"/>
   }
@@ -28,14 +26,13 @@ export default function RootLayout() {
   return (
     <SafeAreaView>
         <Loader isLoading={loading} />
-        <Text>kjjds</Text>
         <ScrollView contentContainerStyle={{height: '100%'}}>
           <View style={styles.container}>
-            <Image 
+            {/* <Image 
             source={images.ronanLogo}
             style={{height: '100%'}}
             resizeMode="contain"
-            />
+            /> */}
              {/* <Image
               style={styles.image}
               source={images.ronanLogo}
@@ -43,15 +40,15 @@ export default function RootLayout() {
               transition={1000}
             /> */}
             {/* <Link href="/profile" style={{color: 'red'}}>profile</Link> */}
-           <View style={{position: 'absolute', display: 'flex', justifyContent: 'center'}}>
+           <View style={{position: 'absolute', display: 'flex', justifyContent: 'center' , alignItems: 'center'}}>
             <Link href="/login">
               <Button
-                style={{margin: 2}}
+                style={{margin: 2,}}
                 status='danger'
                 onPress={() => router.push('/login')}
               >Login</Button>
-              <Text>Or</Text>
             </Link>
+            <Text style={{padding: 10}}>Or</Text>
             <Link href="/login">
               <Button
                 style={{margin: 2}}
@@ -69,7 +66,7 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'green',
+    backgroundColor: '#D4D4D4',
     alignItems: 'center',
     justifyContent: 'center',
   },

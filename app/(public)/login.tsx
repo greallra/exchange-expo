@@ -3,16 +3,19 @@ import React, { useEffect } from 'react'
 import { Link, router } from 'expo-router';
 import useAuth from "@/hooks/useAuth";
 import { FIREBASE_AUTH, signInWithEmailAndPassword, signOut } from '@/firebase/firebaseConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import styles from '@/common/styles'
+import { setLoading } from '@/features/loading/loadingSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
-import { Button, Input, Text as Ktext } from '@ui-kitten/components';
+import { Button, Input, Text as Ktext, Spinner } from '@ui-kitten/components';
 import { PasswordInput } from '@/components/forms/PasswordInput'
 
 const Login = () => {
   const [error, setError] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const { user, login, logout } = useAuth()
+  const { user, login, logout, loading, setLoading } = useAuth()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     console.log(email, password);
@@ -21,19 +24,16 @@ const Login = () => {
 
 
   const handleLogin = () => {
-    // login({ email, password })
-    // dispatch(setLoading())
+    setLoading(true)
     setError('');
     signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
     .then((userCredential) => {
-      console.log('userCredential', userCredential);
-      
-        // Signed in - Listener in Auth Hook will handle setting user and navigate to app
-        // dispatch(cancelLoading())  
+        console.log('userCredential', userCredential);
+        // setLoading(false)
     })
     .catch((error) => {
       console.log(error);
-      
+        // setLoading(false)
         const errorCode = error.code;
         const errorMessage = error.message;
         // dispatch(cancelLoading())
@@ -43,7 +43,7 @@ const Login = () => {
 
   return (
     <SafeAreaView>
-        <ScrollView style={styles.appBody}>
+        <ScrollView style={styles.publicScreen}>
           <Ktext category='h1'>Log In</Ktext>
           <Input
             placeholder='Write your email'
@@ -56,12 +56,13 @@ const Login = () => {
             style={styles.text}
             status='danger'
           >{error}</Ktext>} 
-          <Button
+          <Button 
             style={{marginTop: 20, marginBottom: 20}}
-            status='danger'
-            class="mt-4"
+            disabled={loading} 
             onPress={handleLogin}
-          >Login</Button>
+            appearance={loading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
+            {!loading && 'Login'}
+        </Button>
           <View style={{height: 100, marginTop: 20, marginBottom: 20}}>
             <Ktext>or</Ktext>
             <Ktext
@@ -77,12 +78,3 @@ const Login = () => {
 }
 
 export default Login
-
-const styles = StyleSheet.create({
-  appBody: {
-    padding: 10,
-    // display: 'flex',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-  }
-})

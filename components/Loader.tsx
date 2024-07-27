@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { View, ActivityIndicator, Dimensions, Platform, Text } from "react-native";
 
 const Loader = ({ isLoading }) => {
   const osName = Platform.OS;
@@ -11,11 +11,13 @@ const Loader = ({ isLoading }) => {
       className="absolute flex justify-center items-center w-full h-full bg-primary/60 z-10"
       style={{
         height: screenHeight,
+        display: 'flex',
+        justifyContent: 'center'
       }}
     >
       <ActivityIndicator
         animating={isLoading}
-        color="#fff"
+        color="black"
         size={osName === "ios" ? "large" : 50}
       />
     </View>

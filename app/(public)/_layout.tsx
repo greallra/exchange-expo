@@ -15,7 +15,6 @@ export default function PublicLayout() {
  
   return (
     <>
-        {/* <Text>Public Layout</Text> */}
         <Stack>
             <Stack.Screen
             name="login"
