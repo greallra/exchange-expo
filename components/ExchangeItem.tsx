@@ -11,7 +11,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 // import AvatarGroup from '../components/AvatarGroup'
 import { Card, Layout, Text as Ktext, Icon, Divider } from '@ui-kitten/components';
 import { images } from '@/constants'
-import { parseLocation } from '@/common/utils'
+import { safeParse } from '@/common/utils'
 
 
 interface ExchangeItemProps {
@@ -60,16 +60,16 @@ const ExchangeItem = (props: ExchangeItemProps) => {
     const isHost = props.organizerId === user.id;
     
     return (
-      <TouchableOpacity style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
+      <TouchableOpacity key={props.id} style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
               <View style={styles.leftCol}>
                 <View style={styles.icons}>
                   <Image
-                      source={images.spanish}
+                      source={images[props.teachingLanguageUnfolded.name.toLowerCase()]}
                       style={[styles.flag, {marginRight: 7}]}
                   /> 
                   {/* <Ktext>-</Ktext> */}
                   <Image
-                      source={images.french}
+                      source={images[props.learningLanguageUnfolded.name.toLowerCase()]}
                       style={styles.flag}
                   /> 
                 </View>
@@ -97,12 +97,12 @@ const ExchangeItem = (props: ExchangeItemProps) => {
                       fill='#8F9BB3'
                       name='pin'
                     />
-                    <Ktext numberOfLines={1}>{parseLocation(props.location)}</Ktext></View> 
+                    <Ktext numberOfLines={1}>{safeParse('location', props.location)}</Ktext></View> 
             
               </View>
               <View style={styles.rightCol}>
                   <Ktext>{props.time}</Ktext>
-                  <Ktext numberOfLines={1}>{props.organizerUnfolded.username}</Ktext>
+                  <Ktext numberOfLines={1}>{safeParse('organizerUnfolded', props.organizerUnfolded)}</Ktext>
               </View>
     </TouchableOpacity>
     );

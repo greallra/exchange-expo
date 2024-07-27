@@ -8,7 +8,22 @@ import {
     updateDoc,
     deleteDoc,
     doc,
+    onSnapshot
   } from "firebase/firestore";
+
+//   export async function getCollectionListener (collectionName: string) {
+//     const colRef = collection(FIREBASE_DB, collectionName)
+//     onSnapshot(colRef, (snapshot) => {
+//         let data: Array<object> = []
+//         snapshot.docs.forEach((doc) => {
+//             data.push({...doc.data(), id: doc.id })
+//         })
+//         console.log('onSnapshot', data);
+        
+//         return data
+//     });
+// }
+
 
   export async function getCollection (collectionName: string) {
     return new Promise(async (resolve, reject) => {

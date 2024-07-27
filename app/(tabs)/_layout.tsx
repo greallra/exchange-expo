@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Image, SafeAreaView } from 'react-native'
+import { StyleSheet, Text, View, Image, SafeAreaView, } from 'react-native'
 import React from 'react'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { useRoute } from '@react-navigation/native';
 import { Tabs, Redirect, Stack, route } from 'expo-router'
 import { icons } from "@/constants"
-import Header from '@/components/Header'
+import Header from '@/features/header/Header'
+import { Input, Layout, Select, SelectItem, Datepicker, Icon, Text as KText } from '@ui-kitten/components';
 
 const TabIcon = ({ icon, color, name, focused}) => {
     return (
@@ -13,41 +14,50 @@ const TabIcon = ({ icon, color, name, focused}) => {
                 source={icon}
                 resizeMode='contain'
                 tintColor={color}
-                className="w-6 h-6"
             />
             <Text className={`${focused ? 'font-psemibold' : 'font-pregular'} text-xs`}>{name}</Text>
         </SafeAreaView>
     )
 }
+const RenderIcon = ({ icon1, icon2, color, name, focused}): React.ReactElement => (
+    <SafeAreaView style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Icon
+                style={styles.icon} 
+                name={icon1}
+                fill={focused && '#8F9BB3'}
+                animation="shake"
+            />
+            <Icon
+                style={styles.icon}
+                name={icon2}
+                fill={focused && '#8F9BB3'}
+            />
+        </View>
+        <KText status='basic' appearance={focused ? 'hint' : 'default'} style={{ marginTop: 0}}>{name}</KText>
+    </SafeAreaView>
+  
+  );
 
 const PrivateLayout = (props) => {
   const { loading, user } = useGlobalContext();
   const route = useRoute();
-console.log('route', route);
-
-  function getHeaderTitle(): string {
-    return route.params.screen
-  }
-  function getHeaderType(): string {
-    return 'default';
-  }
-
 
   if (!loading && !user) return <Redirect href="/login" />;
 
   return (
     <>
-        <Header headerTitle={getHeaderTitle()} headerType={getHeaderType()}/>
+        <Header />
         <Tabs
             screenOptions={{
                 tabBarShowLabel: false,
-                tabBarActiveTintColor: '#FFA001',
-                tabBarInactiveTintColor: 'green',
+                // tabBarActiveBackgroundColor: 'success',
+                // tabBarInactiveBackgroundColor: 'danger',
                 tabBarStyle: {
-                    backgroundColor: '#fdd7ea',
+                    // backgroundColor: 'secondary',
                     borderTopWidth: 1,
-                    borderTopColor: 'black',
-                    height: 83
+                    // borderTopColor: 'danger',
+                    height: 65
                 }
             }}
         >
@@ -57,10 +67,11 @@ console.log('route', route);
                     title: "Exchanges",
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
-                        <TabIcon 
-                            icon={icons.home}
+                        <RenderIcon 
+                            icon1="flag"
+                            icon2="flag-outline"
                             color={icons.color}
-                            name="exchanges"
+                            name="Exchanges"
                             focused={focused}
                         />
                     )
@@ -72,12 +83,19 @@ console.log('route', route);
                 title: "Create Exchange",
                 headerShown: false,
                 tabBarIcon: ({ color, focused }) => (
-                    <TabIcon 
-                        icon={icons.profile}
+                    <RenderIcon 
+                        icon1="edit-outline"
+                        icon2="calendar"
                         color={icons.color}
                         name="Create Exchange"
                         focused={focused}
                     />
+                    // <TabIcon 
+                    //     icon={icons.profile}
+                    //     color={icons.color}
+                    //     name="Create Exchange"
+                    //     focused={focused}
+                    // />
                 )
             }}
             />
@@ -87,14 +105,6 @@ console.log('route', route);
                 title: "Edit Exchange",
                 headerShown: false,
                 href: null,
-                tabBarIcon: ({ color, focused }) => (
-                    <TabIcon 
-                        icon={icons.profile}
-                        color={icons.color}
-                        name="Edit Exchange"
-                        focused={focused}
-                    />
-                )
             }}
             />
             <Tabs.Screen 
@@ -102,15 +112,7 @@ console.log('route', route);
             options={{
                 title: "View Exchange",
                 headerShown: false,
-                href: null,
-                tabBarIcon: ({ color, focused }) => (
-                    <TabIcon 
-                        icon={icons.profile}
-                        color={icons.color}
-                        name="View Exchange"
-                        focused={focused}
-                    />
-                )
+                href: null
             }}
             />
        
@@ -121,4 +123,10 @@ console.log('route', route);
 
 export default PrivateLayout
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    icon: {
+        width: 24,
+        height: 24,
+        padding: 0
+      },
+})

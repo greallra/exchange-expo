@@ -1,11 +1,12 @@
 import { router } from "expo-router";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import useLanguages from '@/hooks/useLanguages';
 // import { useSelector, useDispatch } from 'react-redux'
 // import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useSelector, useDispatch } from 'react-redux'
+import { setActivePage } from '@/features/header/headerSlice'
 
-// import { notifications } from '@mantine/notifications';
-// import { Button, Input, Text, Space } from '@mantine/core';
+import { useFocusEffect } from '@react-navigation/native';
 import { exchangeFormFields } from '@/common/formFields'
 import { formatPostDataExchange, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
 import { postDoc } from '@/firebase/apiCalls'
@@ -20,12 +21,19 @@ export default function CreateExchange (props) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState(exchangeFormFields)
+  const [fields, setFields] = useState([...exchangeFormFields])
   const { user } = useGlobalContext();
   const { languages } = useLanguages();
 
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(setActivePage({ activePage: 'Create an Exchange', leftside: 'arrow'}))
+      setFields([...exchangeFormFields])
+    }, [])
+  );
+  
   async function handleSubmit(stateOfChild: object) {
     try {
         // dispatch(setLoading())
@@ -75,13 +83,14 @@ export default function CreateExchange (props) {
       }
       
     }, [languages])
+    
 
-    return (<ScrollView style={{backgroundColor: 'pink', height: 1000}}>
+    return (<ScrollView>
               {!busy ? 
                 <Form 
                     fields={fields}
                     user={user} 
-                    onSubmit={(e, stateOfChild) => handleSubmit(e, stateOfChild)} 
+                    onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
                     validateForm={handleValidateForm} 
                     error={error} 
                     formValid={formValid}

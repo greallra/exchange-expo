@@ -121,7 +121,7 @@ export const exchangeFormFields = [
      label: "Duration of Exchange (minutes)",
      placeholder: "Duration of Exchange (minutes)",
      property: "duration",
-     value: "",
+     value: { value: null, selectedValue: null },
      availableValues: ['30', '45', '60', '120', '180'],// web - mantine
      // options: [{ title: '15', }, { title: '30', }, { title: '45', }, { title: '60', }, { title: '90', }, { title: '120', }], react native - kitten ui
     },

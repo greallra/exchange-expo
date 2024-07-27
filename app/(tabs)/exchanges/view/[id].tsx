@@ -1,34 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { setActivePage } from '@/features/header/headerSlice'
+import { useSelector, useDispatch } from 'react-redux'
 import { useLocalSearchParams, Link } from 'expo-router';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { images } from '@/constants'
 // C
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { Button, List, ListItem, Icon } from '@ui-kitten/components';
-// import { notifications } from '@mantine/notifications';
+import { Button, List, ListItem, Icon, Layout, Spinner, Text as KText, Divider, Avatar } from '@ui-kitten/components';
+import { useToast } from "react-native-toast-notifications";
 import AvatarItem from '@/components/AvatarItem'
-import { formatExchange } from '@/common/utils'
-import { getOneDoc, updateDoc } from '@/firebase/apiCalls'
+import { formatExchange, safeParse, safeImageParse } from '@/common/utils'
+import { getOneDoc, updateOneDoc } from '@/firebase/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
-import { Layout, Spinner, Text as KText, Divider, Avatar } from '@ui-kitten/components';
-// import MapPosition from '@/components/Maps/MapPosition'
+import { useRoute } from '@react-navigation/native';
 
-export default function ViewExchange() {
+export default function ViewExchange({ navigation }) {
   const { id } = useLocalSearchParams();
   const { user: me } = useGlobalContext();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [exchange, setExchange] = useState(null);
   const { languages } = useLanguages();
   const { data: users } = useFetch('users')
   const [participantsTeachingLanguage, setParticipantsTeachingLanguage] = useState([])
   const [participantsLearningLanguage, setParticipantsLearningLanguage] = useState([])
-  // const {user: me} = useAuth()
+  const toast = useToast();
+  const route = useRoute();
+  const dispatch = useDispatch()
 
-  // let params = useParams();
-
-  // const isLoading = useSelector((state) => state.loading.value)
-  // const dispatch = useDispatch()
+  useFocusEffect(
+    useCallback(() => { dispatch(setActivePage({ activePage: `Edit ${exchange && exchange.name ? exchange.name: 'Exchange'}`, leftside: 'arrow'})) }, [exchange])
+  );
 
   let amValidToJoin = false;
   let haveJoined = false;
@@ -51,42 +55,46 @@ export default function ViewExchange() {
         amValidToJoin = true;
     }
   }
+  
   async function handleJoin() {
     // dispatch(setLoading())
+    setIsLoading(true)
     try {
       if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === me.teachingLanguageId ) {
-        // dispatch(cancelLoading())
-        // notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, })
+        setIsLoading(false)
+        toast.show(`The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
         return;
       }
       if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === me.learningLanguageId) {
-        // dispatch(cancelLoading())
-        // notifications.show({ color: 'red', title: 'Error', message: `The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, })
+        setIsLoading(false)
+        toast.show(`The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
         return;
       }
       let participantsMeAdded = [...exchange.participantIds, me.id]
-      await updateDoc('exchanges', id, {...exchange, participantIds: participantsMeAdded });
+      await updateOneDoc('exchanges', id, {...exchange, participantIds: participantsMeAdded });
       await fetchData(id)
-      // dispatch(cancelLoading())
-      // notifications.show({ color: 'green', title: 'Success', message: 'You Have Joined the exchaged', })
+      setIsLoading(false)
+      toast.show(`You Have Joined the exchange`, { type: 'success', placement: "top" });
     } catch (error) {
       // dispatch(cancelLoading())
-      // notifications.show({ color: 'red', title: 'Error', message: 'Error joining the Exchange', })
+      setIsLoading(false)
+      toast.show(`Error joining the Exchange, ${error.message}`, { type: 'error', placement: "top" });
     }
   }
 
   async function handleRemoveMyself() {
     try {
       // dispatch(setLoading())
+      setIsLoading(true)
       let participantsMeRemoved = [...exchange.participantIds]
       participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-      await updateDoc('exchanges', id, {...exchange, participantIds: participantsMeRemoved});
+      await updateOneDoc('exchanges', id, {...exchange, participantIds: participantsMeRemoved});
       await fetchData(id)
-      // dispatch(cancelLoading())
-      // notifications.show({ color: 'green', title: 'Success', message: 'You Have been removed from the Exchange', })
+      setIsLoading(false)
+      toast.show(`You Have been removed from the Exchange`, { type: 'success', placement: "top" });
     } catch (error) {
-      // dispatch(cancelLoading())
-      // notifications.show({ color: 'red', title: 'Error', message: 'Error removing from the Exchange', })
+      setIsLoading(false)
+      toast.show(`Error removing you from the Exchange, ${error.message}`, { type: 'error', placement: "top" });
     }
   }
 
@@ -94,11 +102,16 @@ export default function ViewExchange() {
     try {
       const {docSnap} = await getOneDoc("exchanges", id);
       console.log('docSnap.data()', docSnap);
-      
-      const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages)
-      console.log('formattedExchange', formattedExchange);
-      
-      setExchange(formattedExchange)
+      try {
+        const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages, users)
+        console.log('formattedExchange', formattedExchange);
+        
+        setExchange(formattedExchange)
+      } catch (error) {
+        console.log('errrr', error);
+        
+      }
+
     } catch (error) {
       // notifications.show({ color: 'red', title: 'Error', message: 'Error gettting exchange', })
     }
@@ -109,7 +122,12 @@ export default function ViewExchange() {
       fetchData(id)
     }
   }, [languages]); 
+  useEffect(() => {
+    console.log('effffff', id);
+    fetchData(id)
+  }, [id]); 
 
+  console.log(444, id);
   useEffect(() => {
     console.log('users xx xxx', users, exchange);
     if (exchange && users.length > 0) {
@@ -118,7 +136,6 @@ export default function ViewExchange() {
         const participantsLearningLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.learningLanguageId === exchange.teachingLanguageId)
         setParticipantsTeachingLanguage(participantsTeachingLanguage);
         setParticipantsLearningLanguage(participantsLearningLanguage);
-        console.log('users', users, exchange);
       } catch (error) {
         console.log(12, error, users);
         
@@ -149,6 +166,8 @@ export default function ViewExchange() {
     return <View>{divContainer}</View>;
   }
 
+ console.log('exchange', exchange);
+ console.log('users', users);
  console.log('amValidToJoin', amValidToJoin);
  console.log('haveJoined', haveJoined);
 
@@ -169,7 +188,7 @@ export default function ViewExchange() {
       <KText
         style={styles.text}
         category='h6'
-      >{exchange.teachingLanguageUnfolded.label} to {exchange.learningLanguageUnfolded.label} Language Exchange at {exchange.location.structured_formatting.main_text}</KText>
+      >{exchange.teachingLanguageUnfolded.label} to {exchange.learningLanguageUnfolded.label} Language Exchange at {safeParse('location', exchange.location)}</KText>
       <View style={styles.infoBoxSection}>
         <View style={styles.infoBox}>
           <Icon
@@ -177,7 +196,7 @@ export default function ViewExchange() {
             fill='#8F9BB3'
             name='pin'
           />
-          <KText style={styles.text}>{exchange.location.structured_formatting.main_text}</KText>
+          <KText style={styles.text}>{safeParse('location', exchange.location)}</KText>
         </View>
         <View style={styles.infoBox}>
           <Icon
@@ -199,14 +218,25 @@ export default function ViewExchange() {
           <Icon
             style={styles.icon}
             fill='#8F9BB3'
-            name='flag'
-          />
-          <Icon
-            style={styles.iconFlag}
-            fill='#8F9BB3'
             name='flag-outline'
           />
           <KText style={styles.text}>{exchange.teachingLanguageUnfolded.label}, {exchange.learningLanguageUnfolded.label}</KText>
+        </View>
+        <View style={styles.infoBox}>
+          <Icon
+            style={styles.icon}
+            fill='#8F9BB3'
+            name='person'
+          />
+          <KText style={styles.text}>{safeParse('organizerUnfolded', exchange.organizerUnfolded)}</KText>
+        </View>
+        <View style={styles.infoBox}>
+          <Icon
+            style={styles.icon}
+            fill='#8F9BB3'
+            name='pricetags'
+          />
+          <KText style={styles.text}>{exchange.name}</KText>
         </View>
       </View>
       <View style={styles.detailsSection}>
@@ -217,13 +247,11 @@ export default function ViewExchange() {
         style={{ marginVertical: 10}}
         category='h6'
       >Who's Attending?</KText>
-         {/* {participantsList(participantsTeachingLanguage, exchange.teachingLanguageId)} */}
-
       <View style={styles.participantsContainer}>
         <View style={styles.participantsInnerContainer}>
             <View style={{padding: '30px'}}>
                 <View style={styles.participantsColumnTitle}>
-                  <Avatar source={require('@/assets/images/spanish.png')}  size='tiny' />
+                  <Avatar source={safeImageParse('teachingLanguageUnfolded', exchange)} size='tiny' />
                   <KText  category='label'>{ exchange.teachingLanguageUnfolded.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2}</KText>
                 </View>
                 <View style={styles.participantsColumnAvatars}>
@@ -232,7 +260,7 @@ export default function ViewExchange() {
             </View>
             <View style={{padding: '30px'}}>
                 <View style={styles.participantsColumnTitle}>
-                  <Avatar source={require('@/assets/images/spanish.png')}  size='tiny' />
+                  <Avatar source={safeImageParse('learningLanguageUnfolded', exchange)}   size='tiny' />
                   <KText category='label'>{ exchange.learningLanguageUnfolded.name }: {participantsLearningLanguage.length} / {exchange.capacity / 2} </KText>
                 </View>
                 <View style={styles.participantsColumnAvatars}>
@@ -244,15 +272,22 @@ export default function ViewExchange() {
     {!amValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
       Your Languages dont match this Exchange
     </Button> }
-    {amValidToJoin && haveJoined && <Button color="red" fullWidth mt="md" radius="md" onPress={handleRemoveMyself}>
-      Remove myself
+    {amValidToJoin && haveJoined && 
+    <Button 
+      appearance={isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} 
+      onPress={handleRemoveMyself}>
+      {!isLoading && 'Remove myself'}
     </Button> }
 
     {amValidToJoin && !haveJoined && 
-    <Button color="blue" fullWidth mt="md" radius="md" disabled={haveJoined} onPress={handleJoin} loading={isLoading}>
-      Join
+    <Button 
+      disabled={haveJoined} 
+      onPress={handleJoin}
+      appearance={isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
+      {!isLoading && 'Join'}
     </Button> }
     </Layout>
+ 
 
    </ScrollView>) : (<View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>)
 

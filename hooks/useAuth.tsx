@@ -14,6 +14,7 @@ function useAuth() {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
         console.log('onAuthStateChanged USER = ', user);
         if (!user) {
+          // setLoading(false)
           return setUser(null)
         }
         let userDataFromAuth = {
@@ -29,18 +30,18 @@ function useAuth() {
    
         getOneDoc ('users', user.uid)
         .then(({docSnap}) => {
-        //   console.log('get toc', languages); 
-          // setTimeout(() => { console.log('get toc', languages); }, 3000)
-          const combinedAuthAndCollection = {...userDataFromAuth, ...docSnap.data()}
-          
-  
+
+          const combinedAuthAndCollection = {...userDataFromAuth, ...docSnap.data()}     
           console.log('languages', languages);
           console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
           setUser(formatUserData(combinedAuthAndCollection, languages))
+          // setLoading(false)
         })
-        .catch((e) => console.log(e))
+        .catch((e) => { 
+          console.log(e)
+          // setLoading(false)
+        })
       });
-    setTimeout(() =>  setLoading(false),  1500)
     return unsubscribe;
   }, [languages]);
 
@@ -49,23 +50,14 @@ function useAuth() {
   }, [user]);
 
  // the watcher will be responsible for login
- const login = async (data) => {
-    // const formattedData = formatUserData(data, languages)
-    // setUser(formattedData);
-    // try {
-    //     setUser(data)
-        // await AsyncStorage.setItem('user', JSON.stringify(data));
-    // } catch (e) {
-    //     console.log('err AsyncStorage'); 
-    // }
-    // navigate("/exchanges");
+ const login = async () => {
+    // directly with FB
   };
 
   const logout = async () => {
     // auth.signOut().then((user) => {
     //   console.log('signOut', user);
     // })
-    // await AsyncStorage.removeItem('user');
   };
 
 

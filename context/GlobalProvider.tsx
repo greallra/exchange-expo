@@ -6,27 +6,11 @@ const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
 const GlobalProvider = ({ children }) => {
-//   const [isLogged, setIsLogged] = useState(false);
 const { user, login, logout, loading } = useAuth()
 
 
   useEffect(() => {
-    // getCurrentUser()
-    //   .then((res) => {
-    //     if (res) {
-    //       setIsLogged(true);
-    //       setUser(res);
-    //     } else {
-    //       setIsLogged(false);
-    //       setUser(null);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   })
-    //   .finally(() => {
-    //     setLoading(false);
-    //   });
+
     console.log('GlobalContext user', user);
     console.log('GlobalContext loading', user);
     
@@ -38,7 +22,6 @@ const { user, login, logout, loading } = useAuth()
     <GlobalContext.Provider
       value={{
         user,
-        // setUser,
         loading,
       }}
     >

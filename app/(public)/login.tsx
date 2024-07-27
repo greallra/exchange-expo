@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native'
 import React, { useEffect } from 'react'
 import { Link, router } from 'expo-router';
 import useAuth from "@/hooks/useAuth";
@@ -19,18 +19,6 @@ const Login = () => {
     
   },[email, password])
 
-  async function myLog() {
-    try {
-      const value = await AsyncStorage.getItem('firebase:authUser:AIzaSyAkTPwKPtm-6RtWu_PR3LHAuuSx2ISK8bQ:[DEFAULT]');
-      if (value !== null) {
-        console.log('myLog', value);
-        
-      }
-    } catch (e) {
-      console.log('myLog e', e);
-      // error reading value
-    }
-  }
 
   const handleLogin = () => {
     // login({ email, password })
@@ -54,48 +42,36 @@ const Login = () => {
 }
 
   return (
-    <SafeAreaView style={styles.appBody}>
-        <View
-          className="w-full flex justify-center h-full px-4 my-6"
-          // style={{
-          //   minHeight: Dimensions.get("window").height - 100,
-          // }}
-        >
-        <Input
-          placeholder='Write your email'
-          label='Email'
-          value={email}
-          onChangeText={nextValue => setEmail(nextValue)}
-        />
-        <PasswordInput value={password} setValue={nextValue => setPassword(nextValue)}/>
-        {error && <Ktext
-          style={styles.text}
-          status='danger'
-        >{error}</Ktext>} 
-        <Button
-          style={{marginTop: 20, marginBottom: 20}}
-          status='danger'
-          class="mt-4"
-          onPress={handleLogin}
-        >Login</Button>
-        <View className="flex justify-start">
-          <Ktext>or</Ktext>
+    <SafeAreaView>
+        <ScrollView style={styles.appBody}>
+          <Ktext category='h1'>Log In</Ktext>
+          <Input
+            placeholder='Write your email'
+            label='Email'
+            value={email}
+            onChangeText={nextValue => setEmail(nextValue)}
+          />
+          <PasswordInput value={password} setValue={nextValue => setPassword(nextValue)}/>
+          {error && <Ktext
+            style={styles.text}
+            status='danger'
+          >{error}</Ktext>} 
           <Button
             style={{marginTop: 20, marginBottom: 20}}
             status='danger'
             class="mt-4"
-            onPress={() => router.push('/signup')}
-          >Sign Up</Button>
-          <View className="">
-            <Button
-              style={{margin: 2, marginTop: 50}}
+            onPress={handleLogin}
+          >Login</Button>
+          <View style={{height: 100, marginTop: 20, marginBottom: 20}}>
+            <Ktext>or</Ktext>
+            <Ktext
+              style={{marginTop: 20, marginBottom: 20}}
               status='primary'
-              class="mt-4"
-              onPress={myLog}
-            >myLog</Button>
+              onPress={() => router.push('/signup')}
+              >Sign Up
+            </Ktext>
           </View>
-        </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -104,6 +80,9 @@ export default Login
 
 const styles = StyleSheet.create({
   appBody: {
-    padding: 10
+    padding: 10,
+    // display: 'flex',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   }
 })

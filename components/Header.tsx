@@ -1,22 +1,28 @@
 import { StyleSheet, View } from 'react-native'
-// import { H1, H2, H3, H4, H5, H6, Heading, XStack, YStack, ZStack, Avatar } from 'tamagui'
-import { Text, Avatar, Icon } from '@ui-kitten/components';
+import { useNavigation, NavigationState, useRoute } from '@react-navigation/native';
+import { Text as Ktext, Avatar, Icon } from '@ui-kitten/components';
 import React from 'react'
 import { Link, router } from 'expo-router';
+import { useSelector, useDispatch } from 'react-redux'
 import { images } from "@/constants"
 
-const Header = ({ headerType = 'default', headerTitle = 'Page Title' }: { headerType: string, headerTitle: string }) => {
+const Header = ({headerType = 'default', headerTitle = 'Page Title' }: { headerType: string, headerTitle: string }) => {
+
+    const activePage = useSelector((state) => {
+        console.log(JSON.stringify(state, null, 2))
+        return state.header.value.pageTitle
+    })
 
     const defaultHeader = (
     <View style={styles.header}>
-        <Text style={{ marginTop: 0 }}>
-    
-        </Text>
-        <Text style={{ marginTop: 0 }}>{ headerTitle }</Text>
+        <Ktext style={{ marginTop: 0 }}>
+            
+        </Ktext>
+        <Ktext  category='s1' style={{ marginTop: 0 }}>{ activePage ? activePage : 'Page Title' }</Ktext>
         <Link href="/profile">
             <Avatar
                 style={styles.avatar}
-                size='tiny'
+                size='small'
                 source={images.profile}
             />
         </Link>
@@ -30,7 +36,7 @@ const Header = ({ headerType = 'default', headerTitle = 'Page Title' }: { header
                 name='arrow-circle-left'
             />
         </Link>
-        <Text style={{ marginTop: 0 }}>{ headerTitle }</Text>
+        <Ktext style={{ marginTop: 0 }}>{ headerTitle }</Ktext>
         <Link href="/profile">
             <Avatar
                 style={styles.avatar}
@@ -52,6 +58,7 @@ export default Header
 const styles = StyleSheet.create({
     header: {
         display: 'flex', 
+        height: 50,
         padding: 10, 
         marginTop: 20, 
         flexDirection: 'row', 

@@ -11,6 +11,7 @@ import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-n
 import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText } from '@ui-kitten/components';
 import { Link } from 'expo-router'
 import styles from "@/common/styles"
+import {safeParse} from "@/common/utils"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { images } from '@/constants'
@@ -95,18 +96,14 @@ const FormField = (p: FormFieldProps, outputProps) => {
             selectedIndex={p.value.selectedValue}
             onSelect={(index: IndexPath) => handleDirectChange({ selectedValue: index, value: p.availableValues[index.row] } )}
         >
-            {p.availableValues.map( value =>  <SelectItem title={value} />)}
+            {p.availableValues.map( value =>  <SelectItem title={value} key={value} />)}
         </Select>
         }  
         {p.type === 'language_shower' && 
         <>
             <Text>{p.label}</Text>
             <View>
-                {/* <Image
-                    radius="md"
-                    h={'20px'}
-                    src={p.value.smallFlag}
-                /> */}
+            {/* <Avatar source={safeImageParse(`${p.property} Unfolded`, exchange)} size='medium' /> */}
                 <Text>{p.value.label}</Text>
             </View>
             {p.property === 'learningLanguage' && <Link href="/profile">Change Language</Link>}
@@ -130,7 +127,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             selectedIndex={p.value}
             onChange={index => handleDirectChange(index)}
         >
-            {p.options.map( option => <Radio>{option}</Radio>)}
+            {p.options.map( option => <Radio key={option}>{option}</Radio>)}
         </RadioGroup>
         </>)}    
         {p.type === 'radio2' && (
@@ -142,7 +139,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             onChange={index => handleDirectChange(p.options.find( option => option.index === index))}
         >
                
-            {p.options.map( option => <Radio>{option.name}</Radio>)}
+            {p.options.map( option => <Radio key={option}>{option.name}</Radio>)}
         </RadioGroup>
         </>)}    
         {p.type === 'datetime' && 
@@ -158,10 +155,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
         </>
         }
         {p.type === 'location_picker' && 
-        //    <MapAutoComplete 
-        //         selected={p.value} 
-        //         setSelected={handleDirectChange} 
-        //     />
+        <>
             <View style={{zIndex: 1, maxHeight: 200, minHeight: 100}}>
                 <GooglePlacesAutocomplete
                 fetchDetails={true}
@@ -178,6 +172,8 @@ const FormField = (p: FormFieldProps, outputProps) => {
                 onFail={(e) => console.log(e)}
                 />
             </View>
+            <Text>{safeParse (p.property, p.value)} </Text>
+        </>
         } 
     </View>
     )

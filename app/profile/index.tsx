@@ -1,20 +1,20 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
-import { Link } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { router } from 'expo-router'
+import { useEffect, useState, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { useRoute } from '@react-navigation/native';
-import Header from '@/components/Header'
+import Header from '@/features/header/Header'
 import { Button, Spinner, Text as KText } from '@ui-kitten/components';
 import { signOut, FIREBASE_AUTH } from '@/firebase/firebaseConfig';
 import Form from '@/components/forms/Form'
 
 import { useGlobalContext } from "@/context/GlobalProvider";
 
-// import { useSelector, useDispatch } from 'react-redux'
-// import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
+import { useFocusEffect } from '@react-navigation/native';
+import { setActivePage } from '@/features/header/headerSlice'
 import { userFormFields } from '@/common/formFields'
 import { validateForm } from '@/services/formValidation'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataSignup } from '@/common/formHelpers'
-import Toast from 'react-native-toast-message';
 import { useToast } from "react-native-toast-notifications";
 // import { useDisclosure } from '@mantine/hooks';
 // import { Modal, Button, Alert } from '@mantine/core';
@@ -35,9 +35,14 @@ const Profile = () => {
 
   const toast = useToast();
 
-  console.log('route.name', route);
+  const dispatch = useDispatch()
+  useFocusEffect(
+    useCallback(() => { dispatch(setActivePage({ activePage: 'My Profile', leftside: 'arrow'})) }, [])
+  );
+
   const handleLogout = () => {
     FIREBASE_AUTH.signOut().then((user) => {
+      router.push('/')
       console.log('signOut', user);
     })
   }
@@ -106,8 +111,8 @@ const Profile = () => {
 
   return (
     <ScrollView>
-      <Header headerTitle={route.name} headerType="other"/>
-      <View style={{backgroundColor: 'pink'}}>
+      <Header />
+      <View>
               {!busy ? 
                 <Form 
                     fields={fields}

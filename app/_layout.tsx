@@ -1,27 +1,15 @@
 import { Stack, Tabs, Slot, SplashScreen } from "expo-router";
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import GlobalProvider from "@/context/GlobalProvider"
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Layout, Text as KText, Button, Icon } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
-import Toast from 'react-native-toast-message';
 import { ToastProvider } from 'react-native-toast-notifications'
-// import { TamaguiProvider } from 'tamagui'
-// import { createTamagui  } from '@tamagui/core'
-// import { config } from '@tamagui/config/v3'
+import { Provider } from 'react-redux'
+import store from '@/store/store.js'
 
-// you usually export this from a tamagui.config.ts file
-// const tamaguiConfig = createTamagui(config)
-
-// TypeScript types across all Tamagui APIs
-// type Conf = typeof tamaguiConfig
-// declare module '@tamagui/core' {
-//   interface TamaguiCustomConfig extends Conf {}
-// }
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -61,29 +49,33 @@ export default function RootLayout() {
 
   return (
     <GlobalProvider>
-       <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider {...eva} theme={eva.light}>
-          {/* <TamaguiProvider config={tamaguiConfig}> */}
-            <ToastProvider
-              placement="top"
-              duration={5000}
-              animationType='slide-in'
-              animationDuration={250}
-              successColor="green"
-              dangerColor="red"
-              warningColor="orange"
-              successIcon={SuccessIcon}
-              normalColor="gray">
-              <Stack>
-                  <Stack.Screen name="(public)" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
-                  <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />
-                  <Stack.Screen name="settings" options={{ headerShown: false, animation: 'slide_from_right' }} />
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-              </Stack>
-            </ToastProvider>
-      {/* </TamaguiProvider> */}
-      </ApplicationProvider>
+       <Provider store={store}>
+          <IconRegistry icons={EvaIconsPack} />
+            <ApplicationProvider {...eva} theme={eva.light}>
+                <ToastProvider
+                  placement="top"
+                  duration={5000}
+                  animationType='slide-in'
+                  animationDuration={250}
+                  successColor="green"
+                  dangerColor="red"
+                  warningColor="orange"
+                  successIcon={SuccessIcon}
+                  normalColor="gray">
+                  <Stack>
+                      <Stack.Screen name="(public)" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+                      <Stack.Screen name="profile" options={{ headerShown: false, animation: 'slide_from_right' }} />
+                      <Stack.Screen name="settings" options={{ headerShown: false, animation: 'slide_from_right' }} />
+                      <Stack.Screen name="index" options={{ headerShown: false }} />
+                  </Stack>
+                </ToastProvider>
+          </ApplicationProvider>
+      </Provider>
     </GlobalProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  
+});

@@ -4,8 +4,6 @@ import { icons } from "@/constants"
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 
-
-
 export default function PublicLayout() {
   const { loading, user } = useGlobalContext();
 

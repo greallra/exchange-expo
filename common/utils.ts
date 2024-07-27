@@ -1,5 +1,6 @@
 import { format, formatDistance, formatRelative, subDays, formatISO } from 'date-fns'
 import _ from 'lodash'
+import { images } from '@/constants'
 
 // Get image based on env
 export function getImage(path) {
@@ -60,7 +61,10 @@ export function formatExchange (exchange: object, languages: Array, users: Array
     exchange.teachingLanguageUnfolded = getObjectById(exchange.teachingLanguageId, languages)
     exchange.learningLanguageUnfolded = getObjectById(exchange.learningLanguageId, languages)
     
-    exchange.organizerUnfolded = users.find( item => item.id === exchange.organizerId)
+    if (users.length > 0) {
+        exchange.organizerUnfolded = users.find( item => item.id === exchange.organizerId)
+    }
+
 
     return {
         ...exchange
@@ -81,9 +85,47 @@ export function getUserInitials (user: object) {
     return user.firstname.charAt(0).toUpperCase() + user.lastname.charAt(0).toUpperCase() 
 }
 
-export function parseLocation (location: object) {
-    if (location.structured_formatting && location.structured_formatting.main_text) {
-        return location.structured_formatting.main_text
+export function safeParse (property: string, value: object) {
+    if (!property || !value) {
+        return 'Parse Fail'
     }
-    return 'Error parsing location'
+    if (typeof value === 'string') {
+        return value
+    }
+    if (property === 'location') {
+        if (value.structured_formatting) {
+            return value.structured_formatting.main_text
+        }
+        return 'Parse Fail'
+    }
+    if (property === 'organizerUnfolded') {
+        if (value.username) {
+            return value.username
+        }
+        return 'Parse Fail'
+    }
+    return 'Parse Fail'
+}
+
+
+export function safeImageParse (property: string, obj: object) {
+    try {
+        if (!property || !obj) {
+            return images.empty
+        }
+        if (typeof value === 'string') {
+            return images.empty
+        }
+        if (property === 'teachingLanguageUnfolded' || property === 'learningLanguageUnfolded' &&
+            obj[property] && obj[property].name
+        ) { 
+            let name = obj[property].name
+            return images[name.toLowerCase()]
+        } 
+    } catch (error) {
+        console.log(error.message);
+
+        return images.empty
+    }
+  
 }

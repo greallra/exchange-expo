@@ -1,4 +1,4 @@
-import { Text, View, Image } from "react-native";
+// import { Text, View, Image, } from "react-native";
 import { Tabs, router, Stack, Redirect } from 'expo-router'
 import { icons } from "@/constants"
 import { useGlobalContext } from "@/context/GlobalProvider";

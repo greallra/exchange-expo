@@ -1,4 +1,4 @@
-import { Button, IndexPath } from '@ui-kitten/components';
+import { Button, IndexPath, Spinner } from '@ui-kitten/components';
 // import { IconInfoCircle } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import FormField from './FormField'
@@ -13,7 +13,8 @@ interface FormProps {
     validateForm: <T>(data: T) => void,
     error: string,
     formValid: boolean,
-    user: object
+    user: object,
+    isLoading: boolean
 }
 
 const Form = (p: FormProps) => {
@@ -21,10 +22,10 @@ const Form = (p: FormProps) => {
     const getInitialState = () => {
         let initialState = {};
         p.fields.forEach((field) => {
-            if (field.property === 'select') {
+            if (field.type === 'select' && !field.value) {
                 initialState[field.property] = {
                     selectedValue : new IndexPath(0),
-                    value: field.value
+                    value: field.availableValues[0]
                 }
             } else {
                 initialState[field.property] = field.value
@@ -51,9 +52,14 @@ const Form = (p: FormProps) => {
                 onChange={(property: string, value: string | boolean | number) => handleChange(property, value)} 
                 value={state[field.property]}/>
         })}
-        <Button disabled={!p.formValid} onPress={() => p.onSubmit(state)}>Submit</Button>
+        <Button 
+            disabled={p.isLoading} 
+            onPress={() => p.onSubmit(state)}
+            appearance={p.isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
+            {!p.isLoading && 'Submit'}
+        </Button>
         {/* <Button onPress={() => p.onSubmit(state)}>Submit</Button> */}
-        <Button onPress={() => log.error(JSON.stringify(state))}>Log state</Button>
+        {/* <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button> */}
     
     </View>
 }

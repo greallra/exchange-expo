@@ -101,8 +101,7 @@ useEffect(() => {
 
   return (
     <ScrollView style={styles.appBody}>
-      <View>
-        <KText>Sign Up</KText>
+        <KText category='h6'>Sign Up</KText>
         {!busy ? <Form 
             fields={formFields} 
             onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
@@ -113,14 +112,16 @@ useEffect(() => {
         {error &&  <KText
             status='danger'
           >{error}</KText>}
-
-    </View>
-      <Button
-        style={{margin: 2, marginTop: 50}}
-        status='primary'
-        class="mt-4"
-        onPress={() => router.push('/login')}
-      >back</Button>
+          
+        <KText
+          appearance='hint'
+          style={{ margin: 2, marginTop: 10, textAlign: 'center'}}
+        >or</KText>
+        <KText
+          style={{height: 100, margin: 2, marginTop: 10, textAlign: 'center'}}
+          status='primary'
+          onPress={() => router.push('/login')}
+        >Login</KText>
     </ScrollView>
   )
 }

@@ -45,3 +45,7 @@ export function updateFormFieldsWithDefaultData(formFields: Array, defaultData: 
         return field
     })
 }
+export function getIndexOfAvailableValues(formFields: Array, property: string, value: any) {
+    const field = formFields.find( field => field.property === property)
+    return field.availableValues.indexOf(value)
+}
