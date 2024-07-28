@@ -15,15 +15,17 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
 import { Text, View, StyleSheet, ScrollView, } from "react-native";
 import { Text as KText, Spinner, Layout } from '@ui-kitten/components';
+import { useToast } from "react-native-toast-notifications";
 
 export default function CreateExchange (props) {
-  // const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
   const [fields, setFields] = useState([...exchangeFormFields])
   const { user } = useGlobalContext();
   const { languages } = useLanguages();
+  const toast = useToast();
 
   const dispatch = useDispatch()
 
@@ -36,8 +38,7 @@ export default function CreateExchange (props) {
   
   async function handleSubmit(stateOfChild: object) {
     try {
-        // dispatch(setLoading())
-        // e.preventDefault()
+        setIsLoading(true)
         console.log('stateOfChild', stateOfChild);
         console.log('user', user);
         
@@ -46,7 +47,8 @@ export default function CreateExchange (props) {
         const colRef = await postDoc('exchanges', data)
         // dispatch(cancelLoading())
         console.log('colRef', colRef);
-        // notifications.show({ color: 'green', title: 'Success', message: 'Exchange created', })
+        toast.show("Exchange created!", { type: 'success', placement: "top" });
+        setIsLoading(false)
         router.push('/exchanges')
       } catch (error) {
         // dispatch(cancelLoading())
@@ -95,6 +97,7 @@ export default function CreateExchange (props) {
               onSubmit={(stateOfChild) => handleSubmit(stateOfChild)} 
               validateForm={handleValidateForm} 
               error={error} 
+              isLoading={isLoading}
               formValid={formValid}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
         }

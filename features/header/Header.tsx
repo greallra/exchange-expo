@@ -11,19 +11,20 @@ const Header = () => {
     console.log('headerState', JSON.stringify(headerState, null, 2))
 
     return (
-    <Layout style={styles.header} level='4'>
+    <Layout style={styles.header} level='2'>
         {headerState.leftside === 'arrow' ? <Link href="/exchanges">
             <Icon
                 style={styles.icon}
                 fill='#8F9BB3'
                 name='arrow-circle-left'
+        
             />
         </Link> : <Ktext style={{ marginTop: 0 }}></Ktext>}
         <Ktext  category='s1' style={{ marginTop: 0 }}>{ headerState.activePage ? headerState.activePage : 'Page Title' }</Ktext>
         <Link href="/profile">
             <Avatar
                 style={styles.avatar}
-                size='small'
+                size='medium'
                 source={images.profile}
             />
         </Link>
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
         // height: 50,
         // padding: 10, 
         paddingHorizontal: 10, 
-        paddingTop: 30, 
+        paddingTop: 50, 
         paddingBottom: 20, 
         flexDirection: 'row', 
         justifyContent: 'space-between', 
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
         // borderBottomColor: 'lightgrey',
     },
     icon: {
-        width: 32,
-        height: 32,
+        width: 52,
+        height: 52,
       },
 })

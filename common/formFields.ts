@@ -126,6 +126,21 @@ export const exchangeFormFields = [
      // options: [{ title: '15', }, { title: '30', }, { title: '45', }, { title: '60', }, { title: '90', }, { title: '120', }], react native - kitten ui
     },
     { 
+    type: "radio",
+    name: "gender",
+    label: "Do you want to filter by gender",
+    property: "gender",
+    options: ['Any gender', 'male', 'female'],
+    value: null
+    },
+    { 
+    type: "range",
+    name: "age",
+    label: "Do you want to filter by age",
+    property: "age",
+    value: null
+    },
+    { 
     type: "language_shower",
     name: "teachingLanguage",
     label: "Your teaching language is",

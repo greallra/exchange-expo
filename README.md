@@ -51,8 +51,7 @@ Join our community of developers creating universal apps.
 
 
 # To Do
-- landing screen
-- Loading states on each screen, global loader in redux maybe
 - fix UI a bit
 - push notifications
+- Exchange View Map
 - push to app store

@@ -54,10 +54,10 @@ const PrivateLayout = (props) => {
                 // tabBarActiveBackgroundColor: 'success',
                 // tabBarInactiveBackgroundColor: 'danger',
                 tabBarStyle: {
-                    backgroundColor: '#E4E9F2',
+                    backgroundColor: '#F7F9FC',
                     borderTopWidth: 1,
                     // borderTopColor: 'danger',
-                    height: 65
+                    height: 85
                 }
             }}
         >

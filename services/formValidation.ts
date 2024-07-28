@@ -1,4 +1,4 @@
-import { object, string, email, number, date, InferType } from 'yup';
+import { object, string, email, number, date, InferType, array } from 'yup';
 import _ from 'lodash';
 
 let newUserSchema = object({
@@ -32,9 +32,8 @@ let editUserSchema = object({
 let exchangeSchema = object({
   name: string().required().min(3).max(23),
   location: object({
-    lat: number().required(),
-    lng: number().required(),
-    address: string()
+    geometry: object().required(),
+    address_components: array().required(),
   }).required('You must pick a location'),
   capacity: object({
     value: string().required(),
@@ -42,7 +41,7 @@ let exchangeSchema = object({
   duration: object({
     value: string().required(),
   }).required('You must pick a duration'),
-//   capacity: string().required(),
+  gender: number().required(),
   time: date().required(),
 //   duration: string(),
   teachingLanguage: object().required(),

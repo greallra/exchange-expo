@@ -4,9 +4,9 @@
 // import { IconAt, IconCalendarMonth } from '@tabler/icons-react';
 // import MapAutoComplete from "@/components/Maps/MapAutoComplete";
 
-// import { useNavigate } from "react-router-dom";
+// import RangeSlider from 'rn-range-slider';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
 import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText } from '@ui-kitten/components';
 import { Link } from 'expo-router'
@@ -61,18 +61,19 @@ const FormField = (p: FormFieldProps, outputProps) => {
        p.onChange(p.property, value)
     }
 
+    // const renderThumb = useCallback(() => <Thumb/>, []);
+    // const renderRail = useCallback(() => <Rail/>, []);
+    // const renderRailSelected = useCallback(() => <RailSelected/>, []);
+    // const renderLabel = useCallback(value => <Label text={value}/>, []);
+    // const renderNotch = useCallback(() => <Notch/>, []);
+    // const handleValueChange = useCallback((low, high) => {
+    // setLow(low);
+    // setHigh(high);
+    // }, []);
+
 
     return (
     <View style={styles.formFieldWrapper}>
-        {/* <label htmlFor={p.label}>{p.name}</label>
-        <input 
-            type={p.type} 
-            name={p.property}
-            placeholder={p.placeholder}
-            id={p.id}
-            value={p.value}
-            onChange={handleChange}
-        /> */}
         {(p.type === 'text'  || p.type === 'email') &&  <Input
             placeholder={p.placeholder}
             label={p.label}
@@ -143,7 +144,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
         </RadioGroup>
         </>)}    
         {p.type === 'datetime' && 
-        <>
+        <View style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <DateTimePicker
                 testID="dateTimePicker"
                 value={p.value}
@@ -151,19 +152,20 @@ const FormField = (p: FormFieldProps, outputProps) => {
                 is24Hour={p.is24Hour}
                 onChange={(event, selectedDate) => handleDirectChange(selectedDate)}
             />
-            <Text>Time selected: {p.value.toLocaleString()}</Text>
-        </>
+            <KText category='c1' status='' style={{paddingTop: 5}}>Time selected: <KText category='label' status='success'>{p.value.toLocaleString()}</KText> </KText>          
+        </View>
         }
         {p.type === 'location_picker' && 
         <>
-            <View style={{zIndex: 1, maxHeight: 200, minHeight: 100}}>
+            <View>
                 <GooglePlacesAutocomplete
                 fetchDetails={true}
                 placeholder='Choose a location'
                 onPress={(data, details = null) => {
                     // 'details' is provided when fetchDetails = true
-                    console.log(data, details);
-                    handleDirectChange({ address_components: details.address_components, structured_formatting: data.structured_formatting, ...details.geometry.location })
+                    console.log('map -data', JSON.stringify(data, null, 2));
+                    console.log('map -details', JSON.stringify(details, null, 2));
+                    handleDirectChange({ address_components: details.address_components, structured_formatting: data.structured_formatting, geometry: details.geometry } )
                 }}
                 query={{
                     key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -172,7 +174,31 @@ const FormField = (p: FormFieldProps, outputProps) => {
                 onFail={(e) => console.log(e)}
                 />
             </View>
-            <Text>{safeParse (p.property, p.value)} </Text>
+            {p.value && <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                <KText category='c1' status='success'>{safeParse (p.property, p.value)}</KText> 
+                <Icon
+                    style={{ width: 16, height: 16, marginLeft: 5 }}
+                    fill='green'
+                    name='checkmark-circle-2-outline'
+                />
+            </View>}
+        </>
+        } 
+        {p.type === 'range' && 
+        <>
+           {/* <Slider
+            style={styles.slider}
+            min={0}
+            max={100}
+            step={1}
+            floatingLabel
+            renderThumb={renderThumb}
+            renderRail={renderRail}
+            renderRailSelected={renderRailSelected}
+            renderLabel={renderLabel}
+            renderNotch={renderNotch}
+            onValueChanged={handleValueChange}
+            /> */}
         </>
         } 
     </View>

@@ -75,16 +75,27 @@ const ExchangeItem = (props: ExchangeItemProps) => {
                   /> 
                 </View>
                 <View style={[styles.icons, styles.mt]}>
-                  <Icon
+                  {/* <Icon
                       style={styles.icon}
                       fill='#8F9BB3'
                       name='people-outline'
-                    />
-                   <Ktext numberOfLines={1} style={{ paddingLeft: 5}}>{props.participantIds.length} / {props.capacity}</Ktext>
+                    /> */}
+                   <Ktext numberOfLines={1} style={{ paddingLeft: 5,}} category='s2'>{participantsTeachingLanguage.length}/{props.capacity / 2}</Ktext>
+                   <Ktext numberOfLines={1} style={{ paddingLeft: 18, }} category='s2'>{participantsLearningLanguage.length}/{props.capacity / 2}</Ktext>
                 </View>
               </View>
               <View style={styles.middleCol}>
-                  <View style={styles.fr}>  
+                  <View style={[styles.icons]}>
+                    <Ktext numberOfLines={2} category='h6'>{safeParse('location', props.location)}</Ktext>
+                    <Icon
+                          style={styles.icon}
+                          fill='#8F9BB3'
+                          name='pin'
+                        />
+                  </View>
+
+                  <Ktext numberOfLines={3}>{props.teachingLanguageUnfolded.name } to {props.learningLanguageUnfolded.name } language exchange of {props.capacity} people at {safeParse('location', props.location)}.</Ktext>
+                  {/* <View style={styles.fr}>  
                     <Icon
                       style={styles.icon}
                       fill='#8F9BB3'
@@ -98,12 +109,20 @@ const ExchangeItem = (props: ExchangeItemProps) => {
                       fill='#8F9BB3'
                       name='pin'
                     />
-                    <Ktext numberOfLines={1}>{safeParse('location', props.location)}</Ktext></View> 
+                    <Ktext numberOfLines={1}>{safeParse('geometry', props.geometry)}</Ktext></View>  */}
             
               </View>
               <View style={styles.rightCol}>
                   <Ktext>{props.time}</Ktext>
-                  <Ktext numberOfLines={1}>{safeParse('organizerUnfolded', props.organizerUnfolded)}</Ktext>
+                  <View style={[styles.icons, styles.mt]}>
+                    <Icon
+                        style={styles.icon}
+                        fill='#8F9BB3'
+                        name='people-outline'
+                      />
+                    <Ktext numberOfLines={1} style={{ paddingLeft: 5}}>{props.participantIds.length} / {props.capacity}</Ktext>
+                </View>
+                  {/* <Ktext numberOfLines={1}>{safeParse('organizerUnfolded', props.organizerUnfolded)}</Ktext> */}
               </View>  
       </TouchableOpacity>
     </Card>
@@ -126,8 +145,8 @@ const styles = StyleSheet.create({
       width: '100%',
       flexDirection: 'row',
       flexWrap: 'wrap',
-      // paddingVertical: 10,
-      // paddingHorizontal: 5,
+      paddingVertical: 10,
+      paddingHorizontal: 10,
       backgroundColor: 'white'
     },
     leftCol: {
@@ -144,7 +163,7 @@ const styles = StyleSheet.create({
       flex: 1,
       flexDirection: 'reverse',
       justifyContent: 'space-between',
-      // alignItems: 'flex-end',
+      alignItems: 'flex-end',
       // margin: 10
     },
     icons: {
@@ -156,8 +175,8 @@ const styles = StyleSheet.create({
         height: 20,
     },
     flag: {
-        width: 20,
-        height: 20,
+        width: 30,
+        height: 30,
     }
   });
   

@@ -15,6 +15,7 @@ import { getOneDoc, updateOneDoc } from '@/firebase/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useLanguages from '@/hooks/useLanguages';
 import { useRoute } from '@react-navigation/native';
+import GoogleMap from '@/components/GoogleMap.tsx'
 
 export default function ViewExchange({ navigation }) {
   const { id } = useLocalSearchParams();
@@ -31,7 +32,9 @@ export default function ViewExchange({ navigation }) {
   const dispatch = useDispatch()
 
   useFocusEffect(
-    useCallback(() => { dispatch(setActivePage({ activePage: `Edit ${exchange && exchange.name ? exchange.name: 'Exchange'}`, leftside: 'arrow'})) }, [exchange])
+    useCallback(() => { 
+      dispatch(setActivePage({ activePage: `View ${exchange && exchange.name ? exchange.name: 'Exchange'}`, leftside: 'arrow'})) 
+    }, [exchange])
   );
 
   let amValidToJoin = false;
@@ -178,11 +181,11 @@ export default function ViewExchange({ navigation }) {
     /> 
  }
     {typeof exchange.location === 'object' && 
-      // <MapPosition center={exchange.location} /> 
-      <Image
-        source={images.map}
-        style={{ backgroundColor: 'powderblue',  width: '100%',}}
-      />
+      <GoogleMap location={exchange.location}/> 
+      // <Image
+      //   source={images.map}
+      //   style={{ backgroundColor: 'powderblue',  width: '100%',}}
+      // />
     }
     <Layout style={styles.container} level='4'>
       <KText

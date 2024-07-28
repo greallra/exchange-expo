@@ -5,7 +5,8 @@ import { useEffect } from "react";
 import GlobalProvider from "@/context/GlobalProvider"
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Layout, Text as KText, Button, Icon } from '@ui-kitten/components';
-import { default as theme } from '@/custom-theme2.json';
+import { default as theme } from '@/kitten/custom-theme2.json';
+import { default as mapping } from '@/kitten/mapping.json'; 
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { ToastProvider } from 'react-native-toast-notifications'
 import { Provider } from 'react-redux'
@@ -52,7 +53,7 @@ export default function RootLayout() {
     <GlobalProvider>
        <Provider store={store}>
           <IconRegistry icons={EvaIconsPack} />
-            <ApplicationProvider {...eva} theme={{...eva.light, ...theme}}>
+            <ApplicationProvider {...eva} customMapping={mapping} theme={{...eva.light, ...theme}}>
                 <ToastProvider
                   placement="top"
                   duration={5000}

@@ -104,7 +104,7 @@ export default function Exchanges() {
 
    return (
     <>  
-      <Layout style={styles.container} level='4'>
+      <Layout style={styles.container} level='2'>
           {/* <div className='filter-switch'>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
