@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, SafeAreaView, } from 'react-native'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { useRoute } from '@react-navigation/native';
 import { Tabs, Redirect, Stack, route } from 'expo-router'
@@ -42,7 +43,13 @@ const RenderIcon = ({ icon1, icon2, color, name, focused}): React.ReactElement =
 const PrivateLayout = (props) => {
   const { loading, user } = useGlobalContext();
   const route = useRoute();
+  const headerState = useSelector((state) => state.header.value); 
+  let hideTabs = false
+    if (headerState.activePage === "Create an Exchange" || headerState.activePage.includes("Edit") | headerState.activePage.includes("View")) {
+        hideTabs = true
+    }
 
+    
   if (!loading && !user) return <Redirect href="/login" />;
 
   return (
@@ -54,6 +61,7 @@ const PrivateLayout = (props) => {
                 // tabBarActiveBackgroundColor: 'success',
                 // tabBarInactiveBackgroundColor: 'danger',
                 tabBarStyle: {
+                    display: hideTabs ? 'none' : 'flex',
                     backgroundColor: '#F7F9FC',
                     borderTopWidth: 1,
                     // borderTopColor: 'danger',
@@ -112,7 +120,7 @@ const PrivateLayout = (props) => {
             options={{
                 title: "View Exchange",
                 headerShown: false,
-                href: null
+                href: null,
             }}
             />
        

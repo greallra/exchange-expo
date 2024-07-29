@@ -54,7 +54,7 @@ export const userFormFields = [
      placeholder: "Enter your Gender",
      property: "gender",
      options: ['male', 'female'],
-     value: null
+     value: 0
     },
     { 
      type: "radio2",
@@ -130,8 +130,8 @@ export const exchangeFormFields = [
     name: "gender",
     label: "Do you want to filter by gender",
     property: "gender",
-    options: ['Any gender', 'male', 'female'],
-    value: null
+    options: ['male', 'female', 'Any gender'],
+    value: 2
     },
     { 
     type: "range",

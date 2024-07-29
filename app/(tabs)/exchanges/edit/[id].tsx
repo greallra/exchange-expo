@@ -22,7 +22,7 @@ export default function EditExchange() {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState(exchangeFormFields)
+  const [fields, setFields] = useState([...exchangeFormFields])
   const { user } = useGlobalContext();
   const { languages } = useLanguages();
 
@@ -123,7 +123,7 @@ export default function EditExchange() {
 
   return (
   <Layout level='4'>
-    <ScrollView>
+    <ScrollView style={{ height: '100%' }}>
       {!busy ? 
         <Form 
             fields={fields}

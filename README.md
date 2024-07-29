@@ -51,7 +51,11 @@ Join our community of developers creating universal apps.
 
 
 # To Do
-- fix UI a bit
+- fix forms
+- add friends option
+- delete all exchanges when changing language
+- Organizer cant leave
+- range picker
 - push notifications
 - Exchange View Map
 - push to app store

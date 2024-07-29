@@ -7,7 +7,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { images } from '@/constants'
 // C
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { Button, List, ListItem, Icon, Layout, Spinner, Text as KText, Divider, Avatar } from '@ui-kitten/components';
+import { Button, List, ListItem, Icon, Layout, Spinner, Text as KText, Divider, Avatar, Modal, Card,} from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 import AvatarItem from '@/components/AvatarItem'
 import { formatExchange, safeParse, safeImageParse } from '@/common/utils'
@@ -30,6 +30,7 @@ export default function ViewExchange({ navigation }) {
   const toast = useToast();
   const route = useRoute();
   const dispatch = useDispatch()
+  const [visible, setVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => { 
@@ -130,7 +131,6 @@ export default function ViewExchange({ navigation }) {
     fetchData(id)
   }, [id]); 
 
-  console.log(444, id);
   useEffect(() => {
     console.log('users xx xxx', users, exchange);
     if (exchange && users.length > 0) {
@@ -166,7 +166,7 @@ export default function ViewExchange({ navigation }) {
         amValidToJoin={amValidToJoin}
         teachingLanguage={teachingLanguage} />)
     }
-    return <View>{divContainer}</View>;
+    return <View onPress={() => setVisible(true)}>{divContainer}</View>;
   }
 
  console.log('exchange', exchange);
@@ -187,9 +187,9 @@ export default function ViewExchange({ navigation }) {
       //   style={{ backgroundColor: 'powderblue',  width: '100%',}}
       // />
     }
-    <Layout style={styles.container} level='4'>
+    <Layout style={styles.container} level='0'>
       <KText
-        style={styles.text}
+        style={[styles.text, styles.white]}
         category='h6'
       >{exchange.teachingLanguageUnfolded.label} to {exchange.learningLanguageUnfolded.label} Language Exchange at {safeParse('location', exchange.location)}</KText>
       <View style={styles.infoBoxSection}>
@@ -246,20 +246,43 @@ export default function ViewExchange({ navigation }) {
         <KText style={styles.text}>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit et molestiae ipsam dignissimos labore. Nostrum exercitationem excepturi voluptas, illum veritatis at animi eum non ad a dolor quos pariatur libero.</KText>
       </View>
       <Divider />
-      <KText
-        style={{ marginVertical: 10}}
-        category='h6'
-      >Who's Attending?</KText>
+      <View style={[styles.fr, { marginVertical: 20}]}>
+        <KText
+          category='h6'
+        >Who's Attending?</KText>
+        <Button onPress={() => setVisible(true)} size='tiny' style={{width: 100}} status='warning'>
+          Add Friends
+        </Button>
+      </View>
+ 
       <View style={styles.participantsContainer}>
         <View style={styles.participantsInnerContainer}>
             <View style={{padding: '30px'}}>
                 <View style={styles.participantsColumnTitle}>
                   <Avatar source={safeImageParse('teachingLanguageUnfolded', exchange)} size='tiny' />
-                  <KText  category='label'>{ exchange.teachingLanguageUnfolded.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2}</KText>
+                  <KText category='label'>{ exchange.teachingLanguageUnfolded.name }: {participantsTeachingLanguage.length} / {exchange.capacity / 2}</KText>
                 </View>
                 <View style={styles.participantsColumnAvatars}>
                   {participantsList(participantsTeachingLanguage, exchange.teachingLanguageId)}
                 </View>
+       
+                {/* <Layout   
+                  level='4'
+                  style={styles.modalContainer}
+                >
+              
+                  <Modal visible={visible} backdropStyle={styles.backdrop}>
+                    <Card disabled={true} style={{padding: 20}}>
+                      <Text>
+            Welcome to UI Kitten 😻
+                      </Text>
+                     
+                      <Button onPress={() => setVisible(false)}>
+                        Cancel
+                      </Button>
+                    </Card>
+                  </Modal>
+                </Layout> */}
             </View>
             <View style={{padding: '30px'}}>
                 <View style={styles.participantsColumnTitle}>
@@ -289,6 +312,7 @@ export default function ViewExchange({ navigation }) {
       appearance={isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
       {!isLoading && 'Join'}
     </Button> }
+
     </Layout>
  
 
@@ -302,6 +326,15 @@ const styles = StyleSheet.create({
     padding: 5
     // flex: 1,
     // justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  white: {
+    backgroundColor: 'white'
+  },
+  fr: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: 'space-between',
     // alignItems: 'center',
   },
   infoBoxSection: {
@@ -345,11 +378,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: 'center',
-  }
+  },
+  modalContainer: {
+    minHeight: 192,
+    padding: 25
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 });
-
-    // <View style={styles.container}>
-   
-    //   <Text></Text>
-    //   <Link href="/exchanges" style={{flex: 1}}>View exchange {id} </Link>
-    // </View>

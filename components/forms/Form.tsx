@@ -33,6 +33,7 @@ const Form = (p: FormProps) => {
         })
         return initialState
     }
+    useEffect(() => {       console.log('state', JSON.stringify(state, null, 2)) }, [state])
     const [state, setState] = useState(getInitialState())
     const handleChange = (property: string, value: string | boolean | number) => {
         console.log('form', property, value);
@@ -59,7 +60,7 @@ const Form = (p: FormProps) => {
             {!p.isLoading && 'Submit'}
         </Button>
         {/* <Button onPress={() => p.onSubmit(state)}>Submit</Button> */}
-        {/* <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button> */}
+        <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button>
     
     </View>
 }

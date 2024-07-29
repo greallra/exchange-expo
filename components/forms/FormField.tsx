@@ -8,7 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
-import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText } from '@ui-kitten/components';
+import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText, Avatar } from '@ui-kitten/components';
 import { Link } from 'expo-router'
 import styles from "@/common/styles"
 import {safeParse} from "@/common/utils"
@@ -102,12 +102,20 @@ const FormField = (p: FormFieldProps, outputProps) => {
         }  
         {p.type === 'language_shower' && 
         <>
-            <Text>{p.label}</Text>
-            <View>
-            {/* <Avatar source={safeImageParse(`${p.property} Unfolded`, exchange)} size='medium' /> */}
-                <Text>{p.value.label}</Text>
+            <KText category='label' appearance='hint' style={{marginBottom: 5}}>{p.label}:</KText>
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <Text style={{paddingRight: 5}}>{p.value.label}:</Text>
+                {p.value && p.value.name ? <Avatar 
+                    source={images[p.value.name.toLowerCase()]} 
+                    style={{width: 20, height: 20}} 
+                />:
+                <Avatar 
+                    source={images.empty} 
+                    style={{width: 20, height: 20}} 
+                />}
             </View>
-            {p.property === 'learningLanguage' && <Link href="/profile">Change Language</Link>}
+            {p.property === 'learningLanguage' && <Link href="/profile">
+            <KText status='primary' category='c2' appearance='hint' style={{textAlign: 'right'}}>Change Language</KText></Link>}
         </>
         }
         {p.type === 'date' && (

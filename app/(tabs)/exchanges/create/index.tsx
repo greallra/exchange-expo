@@ -31,8 +31,11 @@ export default function CreateExchange (props) {
 
   useFocusEffect(
     useCallback(() => {
+      
       dispatch(setActivePage({ activePage: 'Create an Exchange', leftside: 'arrow'}))
-      setFields([...exchangeFormFields])
+      setFields(exchangeFormFields)
+      toast.show("focus", { type: 'success', placement: "top" });
+      console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
     }, [])
   );
   
@@ -73,6 +76,11 @@ export default function CreateExchange (props) {
     }
 
     useEffect(() => {
+      console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
+      
+    }, [fields])
+
+    useEffect(() => {
       if (languages.length > 0) {
           // not really default data, its based on user data, maaybe change in future
           const defaultData = {
@@ -82,14 +90,14 @@ export default function CreateExchange (props) {
           const updatedFields = updateFormFieldsWithDefaultData(fields, defaultData)
           setFields(updatedFields);
           setBusy(false)
-      }
+      } 
       
     }, [languages])
     
 
     return (
     <Layout level="4">
-      <ScrollView>
+      <ScrollView style={{ height: '100%' }}>
         {!busy ? 
           <Form 
               fields={fields}
