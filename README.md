@@ -51,6 +51,8 @@ Join our community of developers creating universal apps.
 
 
 # To Do
+- Deploy current state of app to test flight and android
+- Identify what needs to be done after testing on both devices
 - fix forms
 - add friends option
 - delete all exchanges when changing language
@@ -59,3 +61,22 @@ Join our community of developers creating universal apps.
 - push notifications
 - Exchange View Map
 - push to app store
+
+# Envs
+Developement, Preview, test, Production
+Expo Go / Live simulator: .env file
+Preview Build: eas.json preview config
+Preview Build: eas.json preview config
+
+# Building methods
+https://expo.dev/accounts/greallra/projects/exchanges-expo/builds (where all builds will appear)
+EAS BUILD PREVIEW: These builds don't include developer tools. They are intended to be installed by your team and other stakeholders. will make a downloadable tar.gz file that i can download from expo.dev and drag onto simulator
+EAS BUILD PRODUCTION: apple store builds, test flight uses prod build
+
+# Building ios
+eas build --platform ios;
+eas submit -p ios; (Selected the build)
+
+# Usefull links
+debug on https://www.youtube.com/watch?v=LvCci4Bwmpc&t=310s
+app dev site: https://appstoreconnect.apple.com/apps/6587568112/testflight/ios

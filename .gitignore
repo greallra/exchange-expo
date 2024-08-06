@@ -22,3 +22,5 @@ expo-env.d.ts
 .env.local
 .env
 eas.json
+ios
+android
