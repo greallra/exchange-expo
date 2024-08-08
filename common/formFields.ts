@@ -89,7 +89,7 @@ export const exchangeFormFields = [
     { 
      type: "location_picker",
      name: "location",
-     label: "Location Name",
+     label: "Location",
      placeholder: "Type a location",
      property: "location",
      value: null

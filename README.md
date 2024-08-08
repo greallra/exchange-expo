@@ -50,16 +50,21 @@ Join our community of developers creating universal apps.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
 
-# To Do
-- Deploy current state of app to test flight and android
-- Identify what needs to be done after testing on both devices
-- fix forms
+# To Do asap
+- Make functional on iphone (forms mainly id say)
+- Make functional on android (forms mainly id say)
+- Make functional on Web (forms mainly id say)
+- Go through profile, then exchanges, then exchange viewing ()
+- Think about styling
+
+# To Do features
 - add friends option
 - delete all exchanges when changing language
 - Organizer cant leave
 - range picker
 - push notifications
 - Exchange View Map
+- profile pic upload
 - push to app store
 
 # Envs
@@ -76,6 +81,12 @@ EAS BUILD PRODUCTION: apple store builds, test flight uses prod build
 # Building ios
 eas build --platform ios;
 eas submit -p ios; (Selected the build)
+go to apple dev and accept conditions, testflight will automatically update
+
+# Building android
+eas build --platform android;
+eas submit -p android
+will need to do this: https://github.com/expo/fyi/blob/main/creating-google-service-account.md
 
 # Usefull links
 debug on https://www.youtube.com/watch?v=LvCci4Bwmpc&t=310s

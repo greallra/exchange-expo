@@ -1,4 +1,6 @@
 import profile from "@/assets/images/profile.png";
+import maleAvatar from "@/assets/images/male-avatar.png";
+import femaleAvatar from "@/assets/images/female-avatar.png";
 import thumbnail from "@/assets/images/thumbnail.png";
 import cards from "@/assets/images/cards.png";
 import path from "@/assets/images/path.png";
@@ -13,4 +15,4 @@ import spanish from "@/assets/images/spanish.png";
 import french from "@/assets/images/french.png";
 import english from "@/assets/images/english.png";
 
-export default { profile, thumbnail, cards, path, logo, logoSmall, empty, ronanLogo, spanish, french, english, map };
+export default { profile, thumbnail, cards, path, logo, logoSmall, empty, ronanLogo, spanish, french, english, map, femaleAvatar, maleAvatar };

@@ -23,8 +23,8 @@ export function formatUserData(user, languages) {
     }
     return {
         ...result,
-        teachingLanguageUnfoled: getObjectById(user.teachingLanguageId, languages),
-        learningLanguageUnfoled: getObjectById(user.learningLanguageId, languages),
+        teachingLanguageUnfolded: getObjectById(user.teachingLanguageId, languages),
+        learningLanguageUnfolded: getObjectById(user.learningLanguageId, languages),
 
     }
 }
@@ -110,6 +110,7 @@ export function safeParse (property: string, value: object) {
 
 export function safeImageParse (property: string, obj: object) {
     try {
+        console.log('1')
         if (!property || !obj) {
             return images.empty
         }

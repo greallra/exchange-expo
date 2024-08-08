@@ -29,6 +29,8 @@ interface ExchangeItemProps {
     teachingLanguageUnfolded: object,
     smallFlag: string,
     users: Array,
+    isMyLanguages: Boolean,
+    isMyExchanges: Boolean
 }
 
 const cardCol = {
@@ -44,6 +46,21 @@ const ExchangeItem = (props: ExchangeItemProps) => {
     const {  user } = useGlobalContext();
     // const { hovered, ref } = useHover();
     // const navigate = useNavigate();
+    const isAttending = props.participantIds.includes(user.id);
+    const isHost = props.organizerId === user.id;
+
+    function getStatus() {
+      console.log('props.participantIds', props.participantIds);
+      console.log('user.id', user.id);
+      
+      if (isAttending) {
+        return 'success'
+      } else {
+        return 'basic'
+      }
+      
+    }
+    
     
     useEffect(() => {
         if (props.participantIds.length > 0 && props.users.length) {
@@ -56,11 +73,10 @@ const ExchangeItem = (props: ExchangeItemProps) => {
         setParticipantsLearningLanguage(allParticipants.filter( p => p.teachingLanguageId === props.learningLanguageId))
       }, [allParticipants]);
       
-    const isAttending = props.participantIds.includes(user.id);
-    const isHost = props.organizerId === user.id;
+
     
     return (
-      <Card>
+      <Card status={getStatus()}>
         <TouchableOpacity key={props.id} style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
               <View style={styles.leftCol}>
                 <View style={styles.icons}>

@@ -1,6 +1,6 @@
-import { Button, IndexPath, Spinner } from '@ui-kitten/components';
-// import { IconInfoCircle } from '@tabler/icons-react';
-import { useState, useEffect } from 'react';
+import { Button, IndexPath, Spinner, Text as KText } from '@ui-kitten/components';
+import { KittenModal } from '@/components/KittenModal'
+import { useState, useEffect, useImperativeHandle } from 'react';
 import FormField from './FormField'
 import { Text, View, StyleSheet, SafeAreaView } from "react-native";
 import styles from "@/common/styles"
@@ -11,10 +11,13 @@ interface FormProps {
     fields: Array<FormFieldProps>,
     onSubmit: <T>(data: T) => void,
     validateForm: <T>(data: T) => void,
+    modalAction: <T>(data: T) => void,
     error: string,
     formValid: boolean,
     user: object,
-    isLoading: boolean
+    isLoading: boolean,
+    modalVisible: boolean,
+    setModalVisible: <T>(data: T) => void,
 }
 
 const Form = (p: FormProps) => {
@@ -33,11 +36,9 @@ const Form = (p: FormProps) => {
         })
         return initialState
     }
-    useEffect(() => {       console.log('state', JSON.stringify(state, null, 2)) }, [state])
+
     const [state, setState] = useState(getInitialState())
     const handleChange = (property: string, value: string | boolean | number) => {
-        console.log('form', property, value);
-        
         setState((s) => {
             p.validateForm({...s, [property]: value})
             console.log('{...s, [property]: value}', property, value);
@@ -47,7 +48,8 @@ const Form = (p: FormProps) => {
     }
     return <View style={styles.formWrapper}>
         {p.fields.map((field, i) => {
-            return <FormField 
+            return field.hideField ? <></> :
+                <FormField 
                 key={i} 
                 {...field} 
                 onChange={(property: string, value: string | boolean | number) => handleChange(property, value)} 
@@ -59,8 +61,17 @@ const Form = (p: FormProps) => {
             appearance={p.isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
             {!p.isLoading && 'Submit'}
         </Button>
-        {/* <Button onPress={() => p.onSubmit(state)}>Submit</Button> */}
-        <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button>
+        {__DEV__ && <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button>}
+        {p.modalVisible && <KittenModal 
+            title="Warning" 
+            onclick={() => p.modalAction(state)}
+            visible={p.modalVisible}
+            isLoading={p.isLoading}
+            setVisible={() => p.setModalVisible(false)}
+            >
+          <KText style={{ paddingVertical: 10 }}>Any exchanges you created will be delelted, do you wish to continue?</KText>
+        </KittenModal>}
+
     
     </View>
 }

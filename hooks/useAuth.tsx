@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FIREBASE_AUTH, onAuthStateChanged } from "@/firebase/firebaseConfig"
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FIREBASE_AUTH, onAuthStateChanged, FIREBASE_DB } from "@/firebase/firebaseConfig"
 import useLanguages from '@/hooks/useLanguages';
 import { getOneDoc } from "@/firebase/apiCalls"
 import { formatUserData } from '@/common/utils'
+// import {
+//   collection,
+//   onSnapshot,
+//   doc
+// } from "firebase/firestore";
+// import _ from 'lodash';
 
 function useAuth() {
   const [user, setUser] = useState(null);
+  const [userReady, setUserReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const { languages } = useLanguages();
 
@@ -35,6 +42,7 @@ function useAuth() {
           console.log('languages', languages);
           console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
           setUser(formatUserData(combinedAuthAndCollection, languages))
+          setTimeout(() => setUserReady(true))
           setLoading(false)
         })
         .catch((e) => { 
@@ -46,7 +54,8 @@ function useAuth() {
   }, [languages]);
 
   useEffect(() => {
-    console.log('user state', user);
+    console.log('user state auuth hook', user);
+    
   }, [user]);
 
  // the watcher will be responsible for login
@@ -61,7 +70,7 @@ function useAuth() {
   };
 
 
-  return { user, loading, logout, login, setLoading };
+  return { user, loading, logout, login, setLoading, setUser };
 }
 
 export default useAuth

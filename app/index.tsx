@@ -10,7 +10,7 @@ import registerNNPushToken from 'native-notify';
 
 
 export default function RootLayout() {
-  registerNNPushToken(22721, 'k4Ew1cxbwqlEmCrX7zZhqR');
+  // registerNNPushToken(22721, 'k4Ew1cxbwqlEmCrX7zZhqR');
   const { loading, user } = useGlobalContext();
   // console.log('process.env.API_KEY', process.env.API_KEY);
   // console.log('process.env;', process.env);
@@ -55,7 +55,7 @@ export default function RootLayout() {
               <Button
                 style={{margin: 2}}
                 status='danger'
-                onPress={() => router.push('/login')}
+                onPress={() => router.push('/signup')}
               >Signup</Button>
             </Link>
             </View>

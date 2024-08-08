@@ -231,7 +231,7 @@ export default function ViewExchange({ navigation }) {
             fill='#8F9BB3'
             name='person'
           />
-          <KText style={styles.text}>{safeParse('organizerUnfolded', exchange.organizerUnfolded)}</KText>
+          <KText style={styles.text}>{safeParse('organizerUnfolded', exchange.organizerUnfolded)} {exchange.organizerId === me.id && <KText appearance='hint'  category='p2'>(You are hosting)</KText>}</KText>
         </View>
         <View style={styles.infoBox}>
           <Icon

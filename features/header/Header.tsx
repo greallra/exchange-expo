@@ -5,10 +5,24 @@ import React from 'react'
 import { Link, router } from 'expo-router';
 import { useSelector, useDispatch } from 'react-redux'
 import { images } from "@/constants"
+// context user not updating on porfile update
+import { useGlobalContext } from "@/context/GlobalProvider";
+import useAuth from "@/hooks/useAuth";
+import useLanguages from '@/hooks/useLanguages';
+import { safeImageParse } from '@/common/utils'
 
 const Header = () => {
     const headerState = useSelector((state) => state.header.value);  
-    console.log('headerState', JSON.stringify(headerState, null, 2))
+    const { user } = useGlobalContext();
+    const { user: user2 } = useAuth();
+    const { languages } = useLanguages();
+    console.log('user header', user)
+    console.log('user2 header', user2)
+
+    function getUserAvatar() {
+        return user2.gender === 0 ? images.maleAvatar : images.femaleAvatar
+    }
+    
 
     return (
     <Layout style={styles.header} level='2'>
@@ -21,12 +35,19 @@ const Header = () => {
             />
         </Link> : <Ktext style={{ marginTop: 0 }}></Ktext>}
         <Ktext  category='s1' style={{ marginTop: 0 }}>{ headerState.activePage ? headerState.activePage : 'Page Title' }</Ktext>
+      
         <Link href="/profile">
-            <Avatar
-                style={styles.avatar}
-                size='medium'
-                source={images.profile}
-            />
+            {user2 &&
+            <>
+                <Avatar source={safeImageParse('teachingLanguageUnfolded', user2)}   size='tiny' />
+                <Avatar
+                    style={styles.avatar}
+                    size='medium'
+                    source={getUserAvatar()}
+                />
+                <Avatar source={safeImageParse('learningLanguageUnfolded', user2)}   size='tiny' />
+            </>
+            }
         </Link>
     </Layout>);
 

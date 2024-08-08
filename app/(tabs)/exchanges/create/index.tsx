@@ -97,7 +97,7 @@ export default function CreateExchange (props) {
 
     return (
     <Layout level="4">
-      <ScrollView style={{ height: '100%' }}>
+      <ScrollView style={{ height: '100%' }} keyboardShouldPersistTaps="always">
         {!busy ? 
           <Form 
               fields={fields}

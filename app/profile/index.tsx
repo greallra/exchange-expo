@@ -2,11 +2,12 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 import { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useRoute } from '@react-navigation/native';
+// import { useRoute } from '@react-navigation/native';
 import Header from '@/features/header/Header'
-import { Button, Spinner, Text as KText, Layout } from '@ui-kitten/components';
+import { Button, Spinner, Text as KText, Layout, Modal, Card } from '@ui-kitten/components';
 import { signOut, FIREBASE_AUTH } from '@/firebase/firebaseConfig';
 import Form from '@/components/forms/Form'
+import { formatUserData } from '@/common/utils'
 
 import { useGlobalContext } from "@/context/GlobalProvider";
 
@@ -17,19 +18,21 @@ import { validateForm } from '@/services/formValidation'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataSignup } from '@/common/formHelpers'
 import { useToast } from "react-native-toast-notifications";
 import useLanguages from '@/hooks/useLanguages';
+import useAuth from "@/hooks/useAuth";
 import { updateOneDoc, getOneDoc, deleteMultipleDocs } from '@/firebase/apiCalls'
 
 
 const Profile = () => {
   const { user } = useGlobalContext();
-  const route = useRoute();
+  const { setUser } = useAuth();
   const [error, setError] = useState('');
-  const [acceptedWarning, setAcceptedWarning] = useState(false);
   const [formValid, setFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(userFormFields);
   const [busy, setBusy] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [languageChangeDocsDeleted, setLanguageChangeDocsDeleted] = useState(false);
   const { languages } = useLanguages();
-
   const toast = useToast();
 
   const dispatch = useDispatch()
@@ -44,30 +47,54 @@ const Profile = () => {
     })
   }
 
+  async function deleteDocsThenSubmit (stateOfForm) {
+    setLoading(true)
+    await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
+    setLanguageChangeDocsDeleted(true);
+    setTimeout(() => {
+      handleSubmit(stateOfForm) 
+      setModalVisible(false)
+    }, 5000);
+  
+  }
+
+
+  function checkForLanguageChange(stateOfForm: Object): Boolean{
+    if (user.teachingLanguageId === stateOfForm.teachingLanguage.id && user.learningLanguageId === stateOfForm.learningLanguage.id) {
+      return false
+    } else {
+      return true
+    }
+  }
 
   async function handleSubmit(stateOfForm) {
     console.log(stateOfForm);
-    // if (!acceptedWarning) {
-    //   return openWarningModal()
-    // }
+    setLoading(true)
     try {
-        // dispatch(setLoading())
-        await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
-        const { error: updateError, response } = await updateOneDoc('users', user.id, formatPostDataSignup(stateOfForm))
+        const isLanguageChange = checkForLanguageChange(stateOfForm)
+        if(isLanguageChange && !languageChangeDocsDeleted){
+          setLoading(false)
+          return setModalVisible(true)
+        }
+        delete stateOfForm.password
+        const { error: updateError, response } = await updateOneDoc('users', user.id, formatPostDataSignup({...stateOfForm, id: user.id}))
         const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
-        // login({...docSnap.data(), id: docSnap.id})
-        // dispatch(cancelLoading())
+
+        const combinedAuthAndCollection = {...user, ...docSnap.data()}     
+        console.log('docSnap', docSnap.data());
+        console.log('user', user);
+        console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
+        setUser(formatUserData(combinedAuthAndCollection, languages))
+        router.push('/exchanges')
+        setLoading(false)
         toast.show("Profile updated!", { type: 'success', placement: "top" });
-        console.log('response, response');
       } catch (error) {
-        console.log(123, error);
+        console.log('error', error);
         // dispatch(cancelLoading())
+        setLoading(false)
         toast.show("Profile updated!");
       }
   }
-  // function openWarningModal(params:type) {
-  //   return open()
-  // }
 
   async function handleValidateForm(form) { 
     // yup validation
@@ -98,7 +125,7 @@ const Profile = () => {
         console.log('defaultData', defaultData);
         
         let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData}, languages)
-        updatedFields = updatedFields.filter( field => !['password', 'email'].includes(field.property) )
+        updatedFields = updatedFields.map( field => !['password', 'email'].includes(field.property) ? field : {...field, hideField: true} )
         console.log('updatedFields', updatedFields);
         setFields(updatedFields);
         setBusy(false)
@@ -118,6 +145,10 @@ const Profile = () => {
               validateForm={handleValidateForm} 
               error={error} 
               formValid={formValid}
+              modalAction={deleteDocsThenSubmit}
+              isLoading={loading}
+              modalVisible={modalVisible}
+              setModalVisible={setModalVisible}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
         }
         {error && <KText
@@ -128,7 +159,6 @@ const Profile = () => {
           status='danger'
           onPress={handleLogout}
         >Logout</Button> 
-
       </ScrollView>
     </Layout>
   )
@@ -136,4 +166,12 @@ const Profile = () => {
 
 export default Profile
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  modalWrapper: {
+    height: '100%',
+    padding: 50,
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+})

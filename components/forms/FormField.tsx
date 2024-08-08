@@ -7,8 +7,8 @@
 // import RangeSlider from 'rn-range-slider';
 
 import { useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native'
-import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText, Avatar } from '@ui-kitten/components';
+import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, ScrollView, Platform } from 'react-native'
+import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText, Avatar, Button } from '@ui-kitten/components';
 import { Link } from 'expo-router'
 import styles from "@/common/styles"
 import {safeParse} from "@/common/utils"
@@ -61,15 +61,21 @@ const FormField = (p: FormFieldProps, outputProps) => {
        p.onChange(p.property, value)
     }
 
-    // const renderThumb = useCallback(() => <Thumb/>, []);
-    // const renderRail = useCallback(() => <Rail/>, []);
-    // const renderRailSelected = useCallback(() => <RailSelected/>, []);
-    // const renderLabel = useCallback(value => <Label text={value}/>, []);
-    // const renderNotch = useCallback(() => <Notch/>, []);
-    // const handleValueChange = useCallback((low, high) => {
-    // setLow(low);
-    // setHigh(high);
-    // }, []);
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
+
+    const showTimepicker = () => {
+        showMode('time');
+    };
 
 
     return (
@@ -118,7 +124,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             <KText status='primary' category='c2' appearance='hint' style={{textAlign: 'right'}}>Change Language</KText></Link>}
         </>
         }
-        {p.type === 'date' && (
+        {p.type === 'date' &&  (
         <Datepicker
             label={p.label}
             placeholder={p.placeholder}
@@ -127,7 +133,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             date={p.value}
             onSelect={nextDate => handleDirectChange(nextDate)}
             accessoryRight={<Icon name='calendar'/>}
-        />)}    
+        />)} 
         {p.type === 'radio' && (
         <>
         <KText category='label' appearance='hint'>{p.label}</KText>
@@ -150,9 +156,10 @@ const FormField = (p: FormFieldProps, outputProps) => {
                
             {p.options.map( option => <Radio key={option} status='warning'>{option.name}</Radio>)}
         </RadioGroup>
-        </>)}    
-        {p.type === 'datetime' && 
+        </>)}  
+        {p.type === 'datetime' && Platform.OS === 'ios' &&
         <View style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+            <KText category='label' appearance='hint'>{p.label}</KText>
             <DateTimePicker
                 testID="dateTimePicker"
                 value={p.value}
@@ -160,13 +167,59 @@ const FormField = (p: FormFieldProps, outputProps) => {
                 is24Hour={p.is24Hour}
                 onChange={(event, selectedDate) => handleDirectChange(selectedDate)}
             />
-            <KText category='c1' status='' style={{paddingTop: 5}}>Time selected: <KText category='label' status='success'>{p.value.toLocaleString()}</KText> </KText>          
+            <KText category='c1' status='' style={{paddingTop: 5}}>
+                Time selected: {p.value ? 
+                    (<KText category='label' status='success'>{p.value.toLocaleString()}</KText>) :       
+                    (<Icon style={{ width: 16, height: 16, marginLeft: 5 }}
+                        fill='alert-circle-outline'
+                        name='checkmark-circle-2-outline'
+                    />)}
+            </KText>          
+        </View>
+        }
+        {p.type === 'datetime' && Platform.OS === 'android' &&
+        <View style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+            <KText category='label' appearance='hint'>{p.label}</KText>
+            <View style={stylesLocal.fRow}>
+                <Button onPress={showDatepicker} size='tiny'>Select Date</Button>
+                <Button onPress={showTimepicker} size='tiny'>Select Time</Button>
+            </View>
+            {show && <DateTimePicker
+                testID="dateTimePicker"
+                value={p.value}
+                mode={mode}
+                is24Hour={p.is24Hour}
+                onChange={(event, selectedDate) => { setShow(false); handleDirectChange(selectedDate); }}
+            />}
+             <KText category='c1' status='' style={{paddingTop: 5}}>
+                Time selected: {p.value ? 
+                    (<KText category='label' status='success'>{p.value.toLocaleString()}</KText>) :       
+                    (<Icon style={{ width: 16, height: 16, marginLeft: 5 }}
+                        fill='alert-circle-outline'
+                        name='checkmark-circle-2-outline'
+                    />)}
+            </KText>     
         </View>
         }
         {p.type === 'location_picker' && 
-        <>
-            <View>
+        <>  
+            <KText category='label' appearance='hint' style={{paddingBottom: 5}}>{p.label}</KText>   
+            <ScrollView keyboardShouldPersistTaps='handled'>
                 <GooglePlacesAutocomplete
+                 listViewDisplayed={false}
+                 styles={{
+                    textInputContainer: {
+                    //   backgroundColor: 'grey',
+                    },
+                    // textInput: {
+                    //   height: 38,
+                    //   color: '#5d5d5d',
+                    //   fontSize: 16,
+                    // },
+                    // predefinedPlacesDescription: {
+                    //   color: '#1faadb',
+                    // },
+                  }}
                 fetchDetails={true}
                 placeholder='Choose a location'
                 onPress={(data, details = null) => {
@@ -181,9 +234,11 @@ const FormField = (p: FormFieldProps, outputProps) => {
                 }}
                 onFail={(e) => console.log(e)}
                 />
-            </View>
+            </ScrollView>        
+
             {p.value && <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-                <KText category='c1' status='success'>{safeParse (p.property, p.value)}</KText> 
+      
+                <KText>Location chosen: <KText category='c1' status='success'>{safeParse (p.property, p.value)}</KText></KText>
                 <Icon
                     style={{ width: 16, height: 16, marginLeft: 5 }}
                     fill='green'
@@ -214,3 +269,19 @@ const FormField = (p: FormFieldProps, outputProps) => {
 }
 
 export default FormField;
+
+const stylesLocal = StyleSheet.create({
+    fRow: {
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    text: {
+      margin: 2,
+    },
+    alternativeContainer: {
+      borderRadius: 4,
+      marginVertical: 2,
+      padding: 2,
+      backgroundColor: '#3366FF',
+    },
+  });

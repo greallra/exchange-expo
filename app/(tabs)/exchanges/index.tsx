@@ -106,7 +106,7 @@ export default function Exchanges() {
     <>  
       <Layout style={styles.container} level='2'>
           {/* <div className='filter-switch'>
-              <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfoled.smallFlag}/>}</Box>
+              <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfolded.smallFlag}/>}</Box>
               <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
               <Switch mt="xs" defaultChecked={false} label="Target my Languages"  checked={isMyLanguages}
                   onChange={(event) => setIsMyLanguages(event.currentTarget.checked)}/>
@@ -126,14 +126,14 @@ export default function Exchanges() {
             <Tab icon={<Icon name='person-outline' />} title="My Exchanges" style={{ padding: 0}}/>
           </TabBar> */}
           <View style={[styles.fc, { marginBottom: 10 }]}>
-            <CheckBox style={styles.checkbox} status='danger' {...isMyLanguages}>
+            <CheckBox style={styles.checkbox} status='warning' {...isMyLanguages}>
               <KText category='h1'>My Languages</KText>
             </CheckBox>
-            <CheckBox style={styles.checkbox} status='danger' {...isMyExchanges}>
+            <CheckBox style={styles.checkbox} status='info' {...isMyExchanges}>
               My Exchanges
             </CheckBox>
-            <CheckBox style={styles.checkbox} status='danger' {...isAttending}>
-              Attending
+            <CheckBox style={styles.checkbox} status='success' {...isAttending}>  
+              <KText category='h1' status='success'>Attending</KText>
             </CheckBox>
           </View>
           <Divider style={{ marginVertical: 5, paddingVertical: 0.5, height: 1, backgroundColor: '#C5CEE0'}}/>
@@ -176,6 +176,8 @@ export default function Exchanges() {
                               teachingLanguageUnfolded={exchange.teachingLanguageUnfolded}
                               participantIds={exchange.participantIds}
                               users={users}
+                              isMyLanguages={isMyLanguages.checked}
+                              isMyExchanges={isMyExchanges.checked}
                               />
                               {isMyExchanges.checked && <Button onPress={() => router.push(`/exchanges/edit/${exchange.id}`)} size="tiny">Edit </Button>}
                               <Divider /></>

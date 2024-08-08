@@ -4,7 +4,7 @@ import { Link, router } from 'expo-router';
 import useAuth from "@/hooks/useAuth";
 import { FIREBASE_AUTH, signInWithEmailAndPassword, signOut } from '@/firebase/firebaseConfig';
 import styles from '@/common/styles'
-import { setLoading } from '@/features/loading/loadingSlice'
+// import { setLoading } from '@/features/loading/loadingSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { Button, Input, Text as Ktext, Spinner, Layout } from '@ui-kitten/components';
@@ -33,7 +33,7 @@ const Login = () => {
     })
     .catch((error) => {
       console.log(error);
-        // setLoading(false)
+        setLoading(false)
         const errorCode = error.code;
         const errorMessage = error.message;
         // dispatch(cancelLoading())

@@ -37,6 +37,7 @@ const Signup = () => {
         await setDoc(doc(FIREBASE_DB, "users", userCredential.user.uid), { id: userCredential.user.uid, ...data });
       } catch (error) {
         // dispatch(cancelLoading())
+        setLoading(false)
         console.log(error, typeof error, error.message);
         setError(error.message)
       }
