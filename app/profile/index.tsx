@@ -79,6 +79,8 @@ const Profile = () => {
         delete stateOfForm.password
         const { error: updateError, response } = await updateOneDoc('users', user.id, formatPostDataSignup({...stateOfForm, id: user.id}))
         const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
+        if (updateError) {throw(updateError) }
+        if (getOneDocErr) {throw(getOneDocErr) }
 
         const combinedAuthAndCollection = {...user, ...docSnap.data()}     
         console.log('docSnap', docSnap.data());
@@ -122,11 +124,9 @@ const Profile = () => {
             teachingLanguage: languages.map( (lang,i) => ({...lang, index: i }) ).find( lang => lang.id === user.teachingLanguageId),
             learningLanguage: languages.map( (lang,i) => ({...lang, index: i }) ).find( lang => lang.id === user.learningLanguageId),
         }
-        console.log('defaultData', defaultData);
         
         let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData}, languages)
         updatedFields = updatedFields.map( field => !['password', 'email'].includes(field.property) ? field : {...field, hideField: true} )
-        console.log('updatedFields', updatedFields);
         setFields(updatedFields);
         setBusy(false)
     }

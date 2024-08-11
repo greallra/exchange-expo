@@ -9,7 +9,7 @@ let newUserSchema = object({
   password: string().required().min(6),
   // name: string().required(),
   dob: date().required(),
-  gender: string().required(),
+  gender: number().required(),
   teachingLanguage: object().required(),
   learningLanguage: object().required(),
 });
@@ -34,6 +34,7 @@ let exchangeSchema = object({
   location: object({
     geometry: object().required(),
     address_components: array().required(),
+    formatted_address: string().required()
   }).required('You must pick a location'),
   capacity: object({
     value: string().required(),
@@ -42,6 +43,7 @@ let exchangeSchema = object({
     value: string().required(),
   }).required('You must pick a duration'),
   gender: number().required(),
+  age_range: array().required(),
   time: date().required(),
 //   duration: string(),
   teachingLanguage: object().required(),

@@ -4,7 +4,7 @@
 // import { IconAt, IconCalendarMonth } from '@tabler/icons-react';
 // import MapAutoComplete from "@/components/Maps/MapAutoComplete";
 
-// import RangeSlider from 'rn-range-slider';
+import RangeSlider from "./RangeSlider";
 
 import { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, ScrollView, Platform } from 'react-native'
@@ -247,21 +247,10 @@ const FormField = (p: FormFieldProps, outputProps) => {
             </View>}
         </>
         } 
-        {p.type === 'range' && 
+        {p.type === 'rangeslider' && 
         <>
-           {/* <Slider
-            style={styles.slider}
-            min={0}
-            max={100}
-            step={1}
-            floatingLabel
-            renderThumb={renderThumb}
-            renderRail={renderRail}
-            renderRailSelected={renderRailSelected}
-            renderLabel={renderLabel}
-            renderNotch={renderNotch}
-            onValueChanged={handleValueChange}
-            /> */}
+            <KText category='label' appearance='hint' style={{paddingBottom: 5}}>{p.label}</KText>   
+            <RangeSlider from={18} to={100} />
         </>
         } 
     </View>

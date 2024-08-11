@@ -35,18 +35,21 @@ const Header = () => {
             />
         </Link> : <Ktext style={{ marginTop: 0 }}></Ktext>}
         <Ktext  category='s1' style={{ marginTop: 0 }}>{ headerState.activePage ? headerState.activePage : 'Page Title' }</Ktext>
-      
+        {__DEV__ && <Ktext style={styles.userNameDev}>{user.username}</Ktext>}
         <Link href="/profile">
             {user2 &&
-            <>
-                <Avatar source={safeImageParse('teachingLanguageUnfolded', user2)}   size='tiny' />
-                <Avatar
-                    style={styles.avatar}
-                    size='medium'
-                    source={getUserAvatar()}
-                />
-                <Avatar source={safeImageParse('learningLanguageUnfolded', user2)}   size='tiny' />
-            </>
+                <>
+                
+                <>
+                    <Avatar source={safeImageParse('teachingLanguageUnfolded', user2)}   size='tiny' />
+                    <Avatar
+                        style={styles.avatar}
+                        size='medium'
+                        source={getUserAvatar()}
+                    />
+                    <Avatar source={safeImageParse('learningLanguageUnfolded', user2)}   size='tiny' />
+                </>
+                </>
             }
         </Link>
     </Layout>);
@@ -73,4 +76,17 @@ const styles = StyleSheet.create({
         width: 52,
         height: 52,
       },
+    avatarContainer: {
+        display: 'flex', 
+        flexDirection: 'row',
+        alignItems: 'center',   
+    },
+    userNameDev: {
+        // backgroundColor: 'green',
+        width: 50,
+        // height: '25%',
+        right: 25,
+        top: 25,
+        position: 'absolute',
+    }
 })

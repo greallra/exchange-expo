@@ -134,11 +134,16 @@ export const exchangeFormFields = [
     value: 2
     },
     { 
-    type: "range",
-    name: "age",
-    label: "Do you want to filter by age",
-    property: "age",
-    value: null
+        type: "rangeslider",
+        name: "age_range",
+        label: "Age Range of Paticipants",
+        property: "age_range",
+        value: [18, 100],
+        min: 18,
+        options: [
+            { value: 18, label: '18' },
+            { value: 100, label: '100' },
+        ]
     },
     { 
     type: "language_shower",
