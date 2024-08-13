@@ -5,6 +5,8 @@ import { getUserInitials } from '@/common/utils'
 import { Layout, Spinner, Text as KText, Divider, Avatar } from '@ui-kitten/components';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { icons, images } from '@/constants'
+import { updateOneDoc } from '@/firebase/apiCalls'
+import { useToast } from "react-native-toast-notifications";
 
 interface propsAvatarItem {
     user: user,
@@ -14,6 +16,7 @@ interface propsAvatarItem {
 // if user return user use return add avatar
 export default function AvatarItem({ me, user, exchange, teachingLanguage, amValidToJoin } : propsAvatarItem ) {
     const [activeHoverId, setActiveHoverId] = useState('')
+    const toast = useToast();
     
     // this is just for the hover state
     function handleMouseEnter(id:string) {
@@ -43,10 +46,23 @@ export default function AvatarItem({ me, user, exchange, teachingLanguage, amVal
             "p49GgsvjoTg9YXlojhcJ"
           ]
     }
+
+    async function removeParticipant(userId) {
+        if (userId === exchange.organizerId) {
+            return toast.show(`Organizers cannot be removed from the exchange`, { type: 'error', placement: "top" });
+        }
+        const updatedParticipants = exchange.participantIds.filter ( id => id !== userId)
+        try {
+            const response = await updateOneDoc ('exchanges', exchange.id, { participantIds: updatedParticipants })
+        } catch (error) {
+            console.log('error', error);
+        }  
+        
+    }
     
     if (user) {
         return (<View style={styles.container} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <Avatar source={user.avatar ? user.avatar : images.profile} size='large'/>
+            <Avatar source={user.avatar ? user.avatar : images.profile} size='large'/>{__DEV__ && <KText onPress={() => removeParticipant(user.id)}>X</KText>}
             <KText appearance='hint'>{user.username}</KText>
         </View>)
     }

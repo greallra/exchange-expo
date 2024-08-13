@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { setActivePage } from '@/features/header/headerSlice'
 import { useSelector, useDispatch } from 'react-redux'
@@ -10,14 +10,18 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Button, List, ListItem, Icon, Layout, Spinner, Text as KText, Divider, Avatar, Modal, Card,} from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 import AvatarItem from '@/components/AvatarItem'
-import { formatExchange, safeParse, safeImageParse } from '@/common/utils'
-import { getOneDoc, updateOneDoc } from '@/firebase/apiCalls'
+import { formatExchange, safeParse, parseLocation, safeImageParse } from '@/common/utils'
+import { getOneDoc, setOneDoc } from '@/firebase/apiCalls'
 import useFetch from '@/hooks/useFetch';
+import useFetchOne from '@/hooks/useFetchOne';
 import useLanguages from '@/hooks/useLanguages';
 import { useRoute } from '@react-navigation/native';
 import GoogleMap from '@/components/GoogleMap.tsx'
+import AddFriendsPopover from '@/components/AddFriendsPopover'
+import LoadingButton from '@/components/LoadingButton'
 
 export default function ViewExchange({ navigation }) {
+  const [, forceUpdate] = useReducer(x => x + 1, 0);
   const { id } = useLocalSearchParams();
   const { user: me } = useGlobalContext();
 
@@ -25,6 +29,7 @@ export default function ViewExchange({ navigation }) {
   const [exchange, setExchange] = useState(null);
   const { languages } = useLanguages();
   const { data: users } = useFetch('users')
+  const { data: exchangeListener } = useFetchOne('exchanges', id)
   const [participantsTeachingLanguage, setParticipantsTeachingLanguage] = useState([])
   const [participantsLearningLanguage, setParticipantsLearningLanguage] = useState([])
   const toast = useToast();
@@ -60,25 +65,47 @@ export default function ViewExchange({ navigation }) {
     }
   }
   
-  async function handleJoin() {
-    // dispatch(setLoading())
+  async function handleAddParticipant(user) {
     setIsLoading(true)
+    let joiningUser;
+    let joiningUserIsMe = false;
+    if (!user) {
+      joiningUser = me
+      joiningUserIsMe = true
+    } else {
+      joiningUser = user 
+    }
     try {
-      if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === me.teachingLanguageId ) {
+      // already joined
+      if (exchange.participantIds.includes(joiningUser.id)) {
+        setIsLoading(false)
+        toast.show(`User ${joiningUser.username} has already joined this exchange`, { type: 'error', placement: "top" });
+        return;
+      }
+      // no language match
+      if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === joiningUser.teachingLanguageId ) {
         setIsLoading(false)
         toast.show(`The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
         return;
       }
-      if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === me.learningLanguageId) {
+      // participantsTeachingLanguage full
+      if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === joiningUser.teachingLanguageId ) {
+        setIsLoading(false)
+        toast.show(`The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
+        return;
+      }
+        // participantsLearningLanguage full
+      if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === joiningUser.learningLanguageId) {
         setIsLoading(false)
         toast.show(`The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
         return;
       }
-      let participantsMeAdded = [...exchange.participantIds, me.id]
-      await updateOneDoc('exchanges', id, {...exchange, participantIds: participantsMeAdded });
-      await fetchData(id)
+      let participantsUserAdded = [...exchange.participantIds, joiningUser.id]
+
+      await setOneDoc('exchanges', id, {...exchange, participantIds: participantsUserAdded });
+      // await fetchData(id)
       setIsLoading(false)
-      toast.show(`You Have Joined the exchange`, { type: 'success', placement: "top" });
+      toast.show(`${joiningUserIsMe ? 'You have' : `${user.username} has`} joined the exchaged`, { type: 'success', placement: "top" });
     } catch (error) {
       // dispatch(cancelLoading())
       setIsLoading(false)
@@ -88,12 +115,14 @@ export default function ViewExchange({ navigation }) {
 
   async function handleRemoveMyself() {
     try {
-      // dispatch(setLoading())
+      if (me.id === exchange.organizerId) {
+        return toast.show(`Organizers cannot remove themselves from the exchange`, { type: 'error', placement: "top" });
+      }
       setIsLoading(true)
       let participantsMeRemoved = [...exchange.participantIds]
       participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-      await updateOneDoc('exchanges', id, {...exchange, participantIds: participantsMeRemoved});
-      await fetchData(id)
+      await setOneDoc('exchanges', id, {...exchange, participantIds: participantsMeRemoved});
+      // await fetchData(id)
       setIsLoading(false)
       toast.show(`You Have been removed from the Exchange`, { type: 'success', placement: "top" });
     } catch (error) {
@@ -117,7 +146,7 @@ export default function ViewExchange({ navigation }) {
       }
 
     } catch (error) {
-      // notifications.show({ color: 'red', title: 'Error', message: 'Error gettting exchange', })
+
     }
   }
 
@@ -127,12 +156,19 @@ export default function ViewExchange({ navigation }) {
     }
   }, [languages]); 
   useEffect(() => {
-    console.log('effffff', id);
     fetchData(id)
   }, [id]); 
+  
+  useEffect(() => {
+   
+    if (exchangeListener) {
+      const formattedExchange = formatExchange({...exchangeListener, id: exchangeListener.id}, languages, users)
+      setExchange(formattedExchange)
+    }
+
+  }, [exchangeListener, id, languages]); 
 
   useEffect(() => {
-    console.log('users xx xxx', users, exchange);
     if (exchange && users.length > 0) {
       try {
         const participantsTeachingLanguage = users.filter((user) => exchange.participantIds.includes(user.id) && user.teachingLanguageId === exchange.teachingLanguageId)
@@ -140,8 +176,7 @@ export default function ViewExchange({ navigation }) {
         setParticipantsTeachingLanguage(participantsTeachingLanguage);
         setParticipantsLearningLanguage(participantsLearningLanguage);
       } catch (error) {
-        console.log(12, error, users);
-        
+        console.log(12, error, users);  
       }
 
     }
@@ -180,18 +215,18 @@ export default function ViewExchange({ navigation }) {
         style={{ backgroundColor: 'powderblue',  width: '100%',}}
     /> 
  }
-    {typeof exchange.location === 'object' && 
+    {/* {exchange.location && 
       <GoogleMap location={exchange.location}/> 
-      // <Image
-      //   source={images.map}
-      //   style={{ backgroundColor: 'powderblue',  width: '100%',}}
-      // />
-    }
+    } */}
+    <Button onPress={forceUpdate}>
+      Click me to refresh
+    </Button>
+
     <Layout style={styles.container} level='0'>
       <KText
         style={[styles.text, styles.white]}
         category='h6'
-      >{exchange.teachingLanguageUnfolded.label} to {exchange.learningLanguageUnfolded.label} Language Exchange at {safeParse('location', exchange.location)}</KText>
+      >{exchange.teachingLanguageUnfolded.label} to {exchange.learningLanguageUnfolded.label} Language Exchange at {parseLocation(exchange.location)}</KText>
       <View style={styles.infoBoxSection}>
         <View style={styles.infoBox}>
           <Icon
@@ -199,7 +234,7 @@ export default function ViewExchange({ navigation }) {
             fill='#8F9BB3'
             name='pin'
           />
-          <KText style={styles.text}>{safeParse('location', exchange.location)}</KText>
+          <KText style={styles.text}>{parseLocation(exchange.location)}</KText>
         </View>
         <View style={styles.infoBox}>
           <Icon
@@ -250,9 +285,7 @@ export default function ViewExchange({ navigation }) {
         <KText
           category='h6'
         >Who's Attending?</KText>
-        <Button onPress={() => setVisible(true)} size='tiny' style={{width: 100}} status='warning'>
-          Add Friends
-        </Button>
+        <AddFriendsPopover loading={isLoading} handleAddParticipant={handleAddParticipant} exchange={exchange} />
       </View>
  
       <View style={styles.participantsContainer}>
@@ -265,24 +298,6 @@ export default function ViewExchange({ navigation }) {
                 <View style={styles.participantsColumnAvatars}>
                   {participantsList(participantsTeachingLanguage, exchange.teachingLanguageId)}
                 </View>
-       
-                {/* <Layout   
-                  level='4'
-                  style={styles.modalContainer}
-                >
-              
-                  <Modal visible={visible} backdropStyle={styles.backdrop}>
-                    <Card disabled={true} style={{padding: 20}}>
-                      <Text>
-            Welcome to UI Kitten 😻
-                      </Text>
-                     
-                      <Button onPress={() => setVisible(false)}>
-                        Cancel
-                      </Button>
-                    </Card>
-                  </Modal>
-                </Layout> */}
             </View>
             <View style={{padding: '30px'}}>
                 <View style={styles.participantsColumnTitle}>
@@ -298,20 +313,20 @@ export default function ViewExchange({ navigation }) {
     {!amValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
       Your Languages dont match this Exchange
     </Button> }
-    {amValidToJoin && haveJoined && 
+    {!isLoading && amValidToJoin && haveJoined && 
     <Button 
-      appearance={isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} 
       onPress={handleRemoveMyself}>
-      {!isLoading && 'Remove myself'}
+      Remove myself
     </Button> }
 
-    {amValidToJoin && !haveJoined && 
+    {!isLoading && amValidToJoin && !haveJoined && 
     <Button 
       disabled={haveJoined} 
-      onPress={handleJoin}
-      appearance={isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
-      {!isLoading && 'Join'}
+      onPress={() => handleAddParticipant()}
+      appearance='filled'>
+      Join
     </Button> }
+    {isLoading && <LoadingButton status="primary"/>}
 
     </Layout>
  

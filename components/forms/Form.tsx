@@ -2,7 +2,7 @@ import { Button, IndexPath, Spinner, Text as KText } from '@ui-kitten/components
 import { KittenModal } from '@/components/KittenModal'
 import { useState, useEffect, useImperativeHandle } from 'react';
 import FormField from './FormField'
-import { Text, View, StyleSheet, SafeAreaView } from "react-native";
+import { Text, View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import styles from "@/common/styles"
 import { logger } from "react-native-logs";
 var log = logger.createLogger();
@@ -46,7 +46,7 @@ const Form = (p: FormProps) => {
         })
         
     }
-    return <View style={styles.formWrapper}>
+    return <ScrollView style={styles.formWrapper} keyboardShouldPersistTaps="handled">
         {p.fields.map((field, i) => {
             return field.hideField ? <></> :
                 <FormField 
@@ -56,9 +56,10 @@ const Form = (p: FormProps) => {
                 value={state[field.property]}/>
         })}
         <Button 
-            disabled={p.isLoading} 
+            disabled={!p.formValid} 
             onPress={() => p.onSubmit(state)}
-            appearance={p.isLoading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
+            appearance={p.isLoading ? 'outline' : 'filled'} 
+            accessoryLeft={p.isLoading ? <Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} /> : <></>} >
             {!p.isLoading && 'Submit'}
         </Button>
         {__DEV__ && <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button>}
@@ -73,7 +74,7 @@ const Form = (p: FormProps) => {
         </KittenModal>}
 
     
-    </View>
+    </ScrollView>
 }
 
 export default Form;

@@ -11,7 +11,7 @@ import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, ScrollView, Pl
 import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText, Avatar, Button } from '@ui-kitten/components';
 import { Link } from 'expo-router'
 import styles from "@/common/styles"
-import {safeParse} from "@/common/utils"
+import { parseLocation } from "@/common/utils"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { images } from '@/constants'
@@ -238,7 +238,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
 
             {p.value && <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
       
-                <KText>Location chosen: <KText category='c1' status='success'>{safeParse (p.property, p.value)}</KText></KText>
+                <KText>Location chosen: <KText category='c1' status='success'>{parseLocation(p.value)}</KText></KText>
                 <Icon
                     style={{ width: 16, height: 16, marginLeft: 5 }}
                     fill='green'

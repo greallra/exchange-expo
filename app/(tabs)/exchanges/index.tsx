@@ -138,6 +138,7 @@ export default function Exchanges() {
           </View>
           <Divider style={{ marginVertical: 5, paddingVertical: 0.5, height: 1, backgroundColor: '#C5CEE0'}}/>
           <ScrollView>
+          {exchangesGroupedByDate.length ===  0 &&  <KText category='h1' status='success'>No Exchanges in DB :-(</KText>}
           {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
               const areGroupedExchanges = groupedExchange.exchanges.length > 0 
               return (

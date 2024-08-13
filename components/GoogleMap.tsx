@@ -24,12 +24,19 @@ const GoogleMap = ({location}) => {
   
   useEffect(() => {
     if (location.geometry) {
-        const latDelta = location.geometry.viewport.northeast.lat - location.geometry.viewport.southwest.lat
+      // not sure how necessary this calc is
+        // const latDelta = location.geometry.viewport.northeast.lat - location.geometry.viewport.southwest.lat
+      //   setCoords({
+      //     latitude: location.geometry.location.lat,
+      //     longitude: location.geometry.location.lng,
+      //     latitudeDelta: latDelta, 
+      //     longitudeDelta: latDelta * ASPECT_RATIO
+      // })
         setCoords({
-          latitude: location.geometry.location.lat,
-          longitude: location.geometry.location.lng,
-          latitudeDelta: latDelta, 
-          longitudeDelta: latDelta * ASPECT_RATIO
+          latitude: location.geometry.lat,
+          longitude: location.geometry.lng,
+          latitudeDelta: 0.01, 
+          longitudeDelta: 0.01
       })
     }
     console.log('coords xx', JSON.stringify(coords, null, 2))

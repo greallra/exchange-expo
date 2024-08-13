@@ -7,7 +7,7 @@ import { setActivePage } from '@/features/header/headerSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import { exchangeFormFields } from '@/common/formFields'
 import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataExchange, getIndexOfAvailableValues } from '@/common/formHelpers'
-import { updateOneDoc, getOneDoc } from '@/firebase/apiCalls'
+import { setOneDoc, getOneDoc } from '@/firebase/apiCalls'
 import { validateForm } from '@/services/formValidation'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
@@ -42,9 +42,7 @@ export default function EditExchange() {
         setIsLoading(true)
         const data = formatPostDataExchange({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
         console.log(data);
-        const colRef = await updateOneDoc('exchanges', id, data)
-        // dispatch(cancelLoading())
-        console.log('colRef', colRef);
+        const colRef = await setOneDoc('exchanges', id, data)
         toast.show("Exchange updated!", { type: 'success', placement: "top" });
         setIsLoading(false)
         router.push('/exchanges')

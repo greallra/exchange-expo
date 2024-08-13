@@ -35,7 +35,7 @@ export default function CreateExchange (props) {
       dispatch(setActivePage({ activePage: 'Create an Exchange', leftside: 'arrow'}))
       setFields(exchangeFormFields)
       toast.show("focus", { type: 'success', placement: "top" });
-      console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
+      // console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
     }, [])
   );
   
@@ -62,6 +62,8 @@ export default function CreateExchange (props) {
     async function handleValidateForm(form) { 
       // yup validation
       const validationResponse = await validateForm('newExchange', form)
+      console.log('validationResponse', validationResponse);
+      
       setError('');
       setFormValid(true);
       if (typeof validationResponse === 'string') {

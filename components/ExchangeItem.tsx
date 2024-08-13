@@ -11,7 +11,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 // import AvatarGroup from '../components/AvatarGroup'
 import { Card, Layout, Text as Ktext, Icon, Divider } from '@ui-kitten/components';
 import { images } from '@/constants'
-import { safeParse } from '@/common/utils'
+import { parseLocation } from '@/common/utils'
 
 
 interface ExchangeItemProps {
@@ -102,7 +102,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
               </View>
               <View style={styles.middleCol}>
                   <View style={[styles.icons]}>
-                    <Ktext numberOfLines={2} category='h6'>{safeParse('location', props.location)}</Ktext>
+                    <Ktext numberOfLines={2} category='h6'>{parseLocation(props.location)}</Ktext>
                     <Icon
                           style={styles.icon}
                           fill='#8F9BB3'
@@ -110,7 +110,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
                         />
                   </View>
 
-                  <Ktext numberOfLines={3}>{props.teachingLanguageUnfolded.name } to {props.learningLanguageUnfolded.name } language exchange of {props.capacity} people at {safeParse('location', props.location)}.</Ktext>
+                  <Ktext numberOfLines={3}>{props.teachingLanguageUnfolded.name } to {props.learningLanguageUnfolded.name } language exchange of {props.capacity} people at {parseLocation(props.location)}.</Ktext>
                   {/* <View style={styles.fr}>  
                     <Icon
                       style={styles.icon}

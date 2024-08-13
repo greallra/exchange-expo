@@ -87,13 +87,35 @@ export async function getOneDoc (collectionName: string, docId: string){
     })
 }
 
-export async function updateOneDoc (collectionName: string, docId: string, data: object){
+export async function setOneDoc (collectionName: string, docId: string, data: object){
     return new Promise(async (resolve, reject) => {
         try {
           const ref = doc(FIREBASE_DB, collectionName, docId);
           const response = await setDoc(ref, data);
           console.log('response', response);
           
+          resolve({
+              error: false,
+              response
+          });
+          
+          } catch (error) {
+            reject({
+                error: true,
+                message: error.message
+            })
+          }
+    })
+}
+export async function updateOneDoc (collectionName: string, docId: string, data: object){
+    return new Promise(async (resolve, reject) => {
+        try {
+          const ref = doc(FIREBASE_DB, collectionName, docId);
+          console.log('docId', docId);
+          console.log('data', data);
+          
+          const response = await updateDoc(ref, data);
+
           resolve({
               error: false,
               response

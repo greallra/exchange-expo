@@ -19,7 +19,7 @@ import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatP
 import { useToast } from "react-native-toast-notifications";
 import useLanguages from '@/hooks/useLanguages';
 import useAuth from "@/hooks/useAuth";
-import { updateOneDoc, getOneDoc, deleteMultipleDocs } from '@/firebase/apiCalls'
+import { setOneDoc, getOneDoc, deleteMultipleDocs } from '@/firebase/apiCalls'
 
 
 const Profile = () => {
@@ -77,7 +77,7 @@ const Profile = () => {
           return setModalVisible(true)
         }
         delete stateOfForm.password
-        const { error: updateError, response } = await updateOneDoc('users', user.id, formatPostDataSignup({...stateOfForm, id: user.id}))
+        const { error: updateError, response } = await setOneDoc('users', user.id, formatPostDataSignup({...stateOfForm, id: user.id}))
         const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
         if (updateError) {throw(updateError) }
         if (getOneDocErr) {throw(getOneDocErr) }
