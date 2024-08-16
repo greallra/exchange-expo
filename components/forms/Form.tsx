@@ -4,8 +4,7 @@ import { useState, useEffect, useImperativeHandle } from 'react';
 import FormField from './FormField'
 import { Text, View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import styles from "@/common/styles"
-import { logger } from "react-native-logs";
-var log = logger.createLogger();
+import LoadingButton from "@/components/LoadingButton"
 
 interface FormProps {
     fields: Array<FormFieldProps>,
@@ -55,13 +54,12 @@ const Form = (p: FormProps) => {
                 onChange={(property: string, value: string | boolean | number) => handleChange(property, value)} 
                 value={state[field.property]}/>
         })}
-        <Button 
+        {!p.isLoading && <Button 
             disabled={!p.formValid} 
-            onPress={() => p.onSubmit(state)}
-            appearance={p.isLoading ? 'outline' : 'filled'} 
-            accessoryLeft={p.isLoading ? <Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} /> : <></>} >
-            {!p.isLoading && 'Submit'}
-        </Button>
+            onPress={() => p.onSubmit(state)}>
+            Submit
+        </Button>}
+        {p.isLoading && <LoadingButton status="primary"/>}
         {__DEV__ && <Button onPress={() => console.log(JSON.stringify(state, null, 2))}>Log state</Button>}
         {p.modalVisible && <KittenModal 
             title="Warning" 

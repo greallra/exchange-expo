@@ -6,6 +6,7 @@ import { FIREBASE_AUTH, signInWithEmailAndPassword, signOut } from '@/firebase/f
 import styles from '@/common/styles'
 // import { setLoading } from '@/features/loading/loadingSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import LoadingButton from "@/components/LoadingButton"
 
 import { Button, Input, Text as Ktext, Spinner, Layout } from '@ui-kitten/components';
 import { PasswordInput } from '@/components/forms/PasswordInput'
@@ -57,13 +58,13 @@ const Login = () => {
               style={styles.text}
               status='danger'
             >{error}</Ktext>} 
-            <Button 
+            {!loading &&<Button 
               style={{marginTop: 20, marginBottom: 20}}
               disabled={loading} 
-              onPress={handleLogin}
-              appearance={loading ? 'outline' : 'filled'} accessoryLeft={<Spinner size='small' style={{justifyContent: 'center', alignItems: 'center',}} />} >
-              {!loading && 'Login'}
-            </Button>
+              onPress={handleLogin} >
+              Login
+            </Button>}
+            {loading && <LoadingButton status="primary"/>}
             <View style={{height: 100, marginTop: 20, marginBottom: 20}}>
               <Ktext>or</Ktext>
               <Ktext

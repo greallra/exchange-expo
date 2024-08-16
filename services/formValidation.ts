@@ -1,4 +1,5 @@
 import { object, string, email, number, date, InferType, array } from 'yup';
+
 import _ from 'lodash';
 
 let newUserSchema = object({
@@ -13,6 +14,7 @@ let newUserSchema = object({
   teachingLanguage: object().required(),
   learningLanguage: object().required(),
 });
+
 let editUserSchema = object({
   firstname: string().required().min(3),
   lastname: string().required().min(3),
@@ -29,7 +31,26 @@ let editUserSchema = object({
     name: string().required(),
   }).required(),
 });
-let exchangeSchema = object({
+
+const exchangeSchemaServer = object({
+  age_range: array(),
+  capacity: string(),
+  duration: string(),
+  gender: number(),
+  learningLanguageId: string().min(20),
+  location: object({
+    geometry: object(),
+    address_components: array(),
+    structured_formatting: object(),
+  }),
+  name: string().min(3).max(23),
+  organizerId: string().min(20),
+  participantIds: array(),
+  teachingLanguageId: string().min(20),
+  time: date(),
+});
+
+let exchangeSchemaFormFields = object({
   name: string().required().min(3).max(23),
   location: object({
     geometry: object().required(),
@@ -48,12 +69,12 @@ let exchangeSchema = object({
 //   duration: string(),
   teachingLanguage: object().required(),
   learningLanguage: object().required(),
-});
+}).noUnknown();
 
 // parse and assert validity
 
-export async function validateForm(form: string, formData: object){
-    if (form === 'newUser') {
+export async function validateForm(formType: string, formData: object){
+    if (formType === 'newUser') {
         try {
             // parse and assert validity
             const user = await newUserSchema.validate(formData)
@@ -66,7 +87,7 @@ export async function validateForm(form: string, formData: object){
             return error.message
         }           
     }
-    if (form === 'editUser') {
+    if (formType === 'editUser') {
         try {
             // parse and assert validity
             const user = await editUserSchema.validate(formData)
@@ -79,10 +100,32 @@ export async function validateForm(form: string, formData: object){
             return error.message
         }           
     }
-    if (form === 'newExchange') {
+    if (formType === 'newExchange') {
         try {
             // parse and assert validity
-            const exchange = await exchangeSchema.validate(formData)
+            const exchange = await exchangeSchemaFormFields.validate(formData)
+            // custom validation
+            return exchange
+        } catch (error) {
+            return error.message
+        }           
+    }
+    if (formType === 'editExchange') {
+        try {
+            // parse and assert validity
+            const exchange = await exchangeSchemaFormFields.validate(formData)
+            // custom validation
+            return exchange
+        } catch (error) {
+            return error.message
+        }           
+    }
+}
+export async function validateFormForServer(formType: string, formData: object){
+    if (formType === 'exchange') {
+        try {
+            // parse and assert validity
+            const exchange = await exchangeSchemaServer.validate(formData)
             // custom validation
             return exchange
         } catch (error) {

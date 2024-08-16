@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, TouchableOpacity } from 'react-native'
 import { useNavigation, NavigationState, useRoute } from '@react-navigation/native';
 import { Text as Ktext, Avatar, Icon, Layout } from '@ui-kitten/components';
 import React from 'react'
@@ -26,14 +26,14 @@ const Header = () => {
 
     return (
     <Layout style={styles.header} level='2'>
-        {headerState.leftside === 'arrow' ? <Link href="/exchanges">
+        {headerState.leftside === 'arrow' ? <TouchableOpacity onPress={() => router.push('/exchanges')}>
             <Icon
                 style={styles.icon}
                 fill='#8F9BB3'
                 name='arrow-circle-left'
         
             />
-        </Link> : <Ktext style={{ marginTop: 0 }}></Ktext>}
+        </TouchableOpacity> : <Ktext style={{ marginTop: 0 }}></Ktext>}
         <Ktext  category='s1' style={{ marginTop: 0 }}>{ headerState.activePage ? headerState.activePage : 'Page Title' }</Ktext>
         {__DEV__ && <Ktext style={styles.userNameDev}>{user.username}</Ktext>}
         <Link href="/profile">

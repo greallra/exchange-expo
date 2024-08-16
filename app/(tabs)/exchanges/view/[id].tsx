@@ -5,23 +5,29 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useLocalSearchParams, Link } from 'expo-router';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { images } from '@/constants'
+import { checkUserIsValidToJoin, esUpdateDoc } from 'exchanges-shared'
+import { FIREBASE_DB } from '@/firebase/firebaseConfig';
 // C
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Button, List, ListItem, Icon, Layout, Spinner, Text as KText, Divider, Avatar, Modal, Card,} from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 import AvatarItem from '@/components/AvatarItem'
 import { formatExchange, safeParse, parseLocation, safeImageParse } from '@/common/utils'
-import { getOneDoc, setOneDoc } from '@/firebase/apiCalls'
+import { getOneDoc, setOneDoc, updateOneDoc } from '@/firebase/apiCalls'
 import useFetch from '@/hooks/useFetch';
 import useFetchOne from '@/hooks/useFetchOne';
 import useLanguages from '@/hooks/useLanguages';
 import { useRoute } from '@react-navigation/native';
 import GoogleMap from '@/components/GoogleMap.tsx'
 import AddFriendsPopover from '@/components/AddFriendsPopover'
+import AddFriendsAutoComplete from '@/components/AddFriendsAutoComplete'
+import { KittenModal } from '@/components/KittenModal'
 import LoadingButton from '@/components/LoadingButton'
+import { validateFormForServer } from '@/services/formValidation'
 
 export default function ViewExchange({ navigation }) {
   const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const [popoverVisible, setPopoverVisible] = useState(false);
   const { id } = useLocalSearchParams();
   const { user: me } = useGlobalContext();
 
@@ -43,74 +49,55 @@ export default function ViewExchange({ navigation }) {
     }, [exchange])
   );
 
-  let amValidToJoin = false;
+  let meValidToJoin = false;
   let haveJoined = false;
   if (exchange && exchange.participantIds) {
     haveJoined = exchange.participantIds.includes(me.id);
   }
-
-  if (exchange && exchange.learningLanguageId && exchange && exchange.teachingLanguageId) {
-    const learningLanguageValues = Object.values(exchange.learningLanguageUnfolded);
-    const teachingLanguageValues = Object.values(exchange.teachingLanguageUnfolded);
-    const combinedValues = [...learningLanguageValues, ...teachingLanguageValues];
-    combinedValues.includes(me.learningLanguageId);
-    combinedValues.includes(me.teachingLanguageId);
-    
-    // if i havent already joined
-    // if they are both my target languages
-    if (
-        combinedValues.includes(me.learningLanguageId) && 
-        combinedValues.includes(me.teachingLanguageId)) {
-        amValidToJoin = true;
-    }
+  // if they are both user's target languages
+  function checkMeIsValidToJoin (user) {
+    let valid = false
+    if (exchange && exchange.learningLanguageId && exchange && exchange.teachingLanguageId) {
+      const learningLanguageValues = Object.values(exchange.learningLanguageUnfolded);
+      const teachingLanguageValues = Object.values(exchange.teachingLanguageUnfolded);
+      const combinedValues = [...learningLanguageValues, ...teachingLanguageValues];
+      combinedValues.includes(user.learningLanguageId);
+      combinedValues.includes(user.teachingLanguageId);
+      if (
+          combinedValues.includes(user.learningLanguageId) && 
+          combinedValues.includes(user.teachingLanguageId)) {
+          valid = true;
+      }
+    }  
+    return valid;
   }
-  
+  meValidToJoin = checkMeIsValidToJoin(me)
+ 
   async function handleAddParticipant(user) {
-    setIsLoading(true)
-    let joiningUser;
-    let joiningUserIsMe = false;
-    if (!user) {
-      joiningUser = me
-      joiningUserIsMe = true
-    } else {
-      joiningUser = user 
-    }
-    try {
-      // already joined
-      if (exchange.participantIds.includes(joiningUser.id)) {
+      setIsLoading(true)
+      const { isValid, message, joiningUser } = checkUserIsValidToJoin(exchange, participantsTeachingLanguage, participantsLearningLanguage, me, user)
+      console.log('isValid, message', isValid, message);
+      if (!isValid) {
         setIsLoading(false)
-        toast.show(`User ${joiningUser.username} has already joined this exchange`, { type: 'error', placement: "top" });
+        toast.show(message, { type: 'error', placement: "top" });
         return;
-      }
-      // no language match
-      if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === joiningUser.teachingLanguageId ) {
+      } 
+      const dataWithUpdatedParticipants = { participantIds: [...exchange.participantIds, joiningUser.id] }
+        // validation is giving back a location object for some reason, leave out for now
+      // const validationResponse = await validateFormForServer('exchange', dataWithUpdatedParticipants)
+      // if (typeof validationResponse === 'string') {
+      //   setIsLoading(false)
+      //   toast.show("Error updating exchange!" + " " + validationResponse, { type: 'error', placement: "top" });
+      //   return
+      // }
+      const { error, response } = await esUpdateDoc(FIREBASE_DB, 'exchanges', id, dataWithUpdatedParticipants);
+      if (error) {
         setIsLoading(false)
-        toast.show(`The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
-        return;
+        return toast.show(response, { type: 'error', placement: "top" })
       }
-      // participantsTeachingLanguage full
-      if (participantsTeachingLanguage.length >= exchange.capacity / 2 && participantsTeachingLanguage[0].teachingLanguageId === joiningUser.teachingLanguageId ) {
-        setIsLoading(false)
-        toast.show(`The Exchange is full for ${exchange.teachingLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
-        return;
-      }
-        // participantsLearningLanguage full
-      if (participantsLearningLanguage.length >= exchange.capacity / 2 && participantsLearningLanguage[0].learningLanguageId === joiningUser.learningLanguageId) {
-        setIsLoading(false)
-        toast.show(`The Exchange is full for ${exchange.learningLanguageUnfolded.name} speakers`, { type: 'error', placement: "top" });
-        return;
-      }
-      let participantsUserAdded = [...exchange.participantIds, joiningUser.id]
-
-      await setOneDoc('exchanges', id, {...exchange, participantIds: participantsUserAdded });
-      // await fetchData(id)
+      setPopoverVisible(false)
+      toast.show(`${joiningUser.username} has joined the exchaged`, { type: 'success', placement: "top" });
       setIsLoading(false)
-      toast.show(`${joiningUserIsMe ? 'You have' : `${user.username} has`} joined the exchaged`, { type: 'success', placement: "top" });
-    } catch (error) {
-      // dispatch(cancelLoading())
-      setIsLoading(false)
-      toast.show(`Error joining the Exchange, ${error.message}`, { type: 'error', placement: "top" });
-    }
   }
 
   async function handleRemoveMyself() {
@@ -121,8 +108,7 @@ export default function ViewExchange({ navigation }) {
       setIsLoading(true)
       let participantsMeRemoved = [...exchange.participantIds]
       participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-      await setOneDoc('exchanges', id, {...exchange, participantIds: participantsMeRemoved});
-      // await fetchData(id)
+      await updateOneDoc('exchanges', id, { participantIds: participantsMeRemoved});
       setIsLoading(false)
       toast.show(`You Have been removed from the Exchange`, { type: 'success', placement: "top" });
     } catch (error) {
@@ -198,15 +184,20 @@ export default function ViewExchange({ navigation }) {
         key={i} 
         user={participants[i]} 
         exchange={exchange} 
-        amValidToJoin={amValidToJoin}
+        amValidToJoin={meValidToJoin}
         teachingLanguage={teachingLanguage} />)
     }
     return <View onPress={() => setVisible(true)}>{divContainer}</View>;
   }
+let exchangeIsFull = false;
+if (exchange) {
+  exchangeIsFull = participantsTeachingLanguage.length === exchange.capacity / 2 && participantsLearningLanguage.length === exchange.capacity / 2
+}
+
 
  console.log('exchange', exchange);
  console.log('users', users);
- console.log('amValidToJoin', amValidToJoin);
+ console.log('meValidToJoin', meValidToJoin);
  console.log('haveJoined', haveJoined);
 
    return exchange ? (<ScrollView>
@@ -219,9 +210,8 @@ export default function ViewExchange({ navigation }) {
       <GoogleMap location={exchange.location}/> 
     } */}
     <Button onPress={forceUpdate}>
-      Click me to refresh
+      Click me to refresh 
     </Button>
-
     <Layout style={styles.container} level='0'>
       <KText
         style={[styles.text, styles.white]}
@@ -285,8 +275,31 @@ export default function ViewExchange({ navigation }) {
         <KText
           category='h6'
         >Who's Attending?</KText>
-        <AddFriendsPopover loading={isLoading} handleAddParticipant={handleAddParticipant} exchange={exchange} />
+        {/* <AddFriendsPopover 
+          visible={popoverVisible}
+          setVisible={setPopoverVisible}
+          loading={isLoading} 
+          handleAddParticipant={handleAddParticipant} 
+          exchange={exchange} /> */}
+        <Button 
+            onPress={() => setPopoverVisible(true)}>
+            Add Friends
+        </Button>
       </View>
+      {popoverVisible && <KittenModal 
+            title="Add Friends" 
+            onclick={() => {}}
+            visible={popoverVisible}
+            isLoading={isLoading}
+            setVisible={setPopoverVisible}
+            >
+          <AddFriendsAutoComplete 
+          visible={popoverVisible}
+          setVisible={setPopoverVisible}
+          loading={isLoading} 
+          handleAddParticipant={handleAddParticipant} 
+          exchange={exchange} />
+        </KittenModal>}
  
       <View style={styles.participantsContainer}>
         <View style={styles.participantsInnerContainer}>
@@ -310,16 +323,19 @@ export default function ViewExchange({ navigation }) {
             </View>
         </View>            
     </View>
-    {!amValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
+    {exchangeIsFull && <Button color="red" fullWidth mt="md" radius="md" disabled>
+      The Exchange is full :-(
+    </Button> }
+    {!exchangeIsFull && !meValidToJoin && <Button color="red" fullWidth mt="md" radius="md" disabled>
       Your Languages dont match this Exchange
     </Button> }
-    {!isLoading && amValidToJoin && haveJoined && 
+    {!exchangeIsFull && !isLoading && meValidToJoin && haveJoined && 
     <Button 
       onPress={handleRemoveMyself}>
       Remove myself
     </Button> }
 
-    {!isLoading && amValidToJoin && !haveJoined && 
+    {!exchangeIsFull && !isLoading && meValidToJoin && !haveJoined && 
     <Button 
       disabled={haveJoined} 
       onPress={() => handleAddParticipant()}

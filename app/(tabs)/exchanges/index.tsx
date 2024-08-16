@@ -162,9 +162,8 @@ export default function Exchanges() {
                         renderItem={renderItem}
                       />       */}
                           {areGroupedExchanges && groupedExchange.exchanges.map((exchange) => {
-                              return <><ExchangeItem 
+                              return <View key={exchange.id}><ExchangeItem 
                               id={exchange.id}
-                              key={exchange.id}
                               name={exchange.name} 
                               location={exchange.location} 
                               capacity={exchange.capacity} 
@@ -181,7 +180,8 @@ export default function Exchanges() {
                               isMyExchanges={isMyExchanges.checked}
                               />
                               {isMyExchanges.checked && <Button onPress={() => router.push(`/exchanges/edit/${exchange.id}`)} size="tiny">Edit </Button>}
-                              <Divider /></>
+                              <Divider />
+                              </View>
                           })}
                   
                       {!areGroupedExchanges && (!isAttending.checked && !isMyLanguages.checked)  && <KText appearance='hint'>No exchanges on this day</KText>}

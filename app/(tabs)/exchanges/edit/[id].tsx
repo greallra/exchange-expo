@@ -6,9 +6,9 @@ import useLanguages from '@/hooks/useLanguages';
 import { setActivePage } from '@/features/header/headerSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import { exchangeFormFields } from '@/common/formFields'
-import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataExchange, getIndexOfAvailableValues } from '@/common/formHelpers'
+import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatExchangeServerFormat, getIndexOfAvailableValues } from '@/common/formHelpers'
 import { setOneDoc, getOneDoc } from '@/firebase/apiCalls'
-import { validateForm } from '@/services/formValidation'
+import { validateForm, validateFormForServer } from '@/services/formValidation'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
 import { useToast } from "react-native-toast-notifications";
@@ -40,9 +40,14 @@ export default function EditExchange() {
     try {
         // dispatch(setLoading())
         setIsLoading(true)
-        const data = formatPostDataExchange({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
-        console.log(data);
-        const colRef = await setOneDoc('exchanges', id, data)
+        const dataServerFormat = formatExchangeServerFormat({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
+        const validationResponse = await validateFormForServer('exchange', dataServerFormat)
+        if (typeof validationResponse === 'string') {
+          setIsLoading(false)
+          toast.show("Error updating exchange!" + " " + validationResponse, { type: 'error', placement: "top" });
+          return
+        }
+        const colRef = await setOneDoc('exchanges', id, validationResponse)
         toast.show("Exchange updated!", { type: 'success', placement: "top" });
         setIsLoading(false)
         router.push('/exchanges')

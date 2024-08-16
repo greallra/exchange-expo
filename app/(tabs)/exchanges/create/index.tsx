@@ -8,7 +8,7 @@ import { setActivePage } from '@/features/header/headerSlice'
 
 import { useFocusEffect } from '@react-navigation/native';
 import { exchangeFormFields } from '@/common/formFields'
-import { formatPostDataExchange, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
+import { formatExchangeServerFormat, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
 import { postDoc } from '@/firebase/apiCalls'
 import { validateForm } from '@/services/formValidation'
 import { useGlobalContext } from "@/context/GlobalProvider";
@@ -41,11 +41,15 @@ export default function CreateExchange (props) {
   
   async function handleSubmit(stateOfChild: object) {
     try {
+
         setIsLoading(true)
         console.log('stateOfChild', stateOfChild);
         console.log('user', user);
-        
-        const data = formatPostDataExchange({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
+
+        const validationResponse = await validateForm('newExchange', stateOfChild)
+        console.log('validationResponse', validationResponse);
+        // return  setIsLoading(false)
+        const data = formatExchangeServerFormat({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
         console.log(data);
         const colRef = await postDoc('exchanges', data)
         // dispatch(cancelLoading())
@@ -61,9 +65,10 @@ export default function CreateExchange (props) {
   }
     async function handleValidateForm(form) { 
       // yup validation
+
       const validationResponse = await validateForm('newExchange', form)
       console.log('validationResponse', validationResponse);
-      
+      // return console.log('form', form);
       setError('');
       setFormValid(true);
       if (typeof validationResponse === 'string') {
@@ -78,7 +83,7 @@ export default function CreateExchange (props) {
     }
 
     useEffect(() => {
-      console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
+      // console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
       
     }, [fields])
 

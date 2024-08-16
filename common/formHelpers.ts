@@ -1,4 +1,4 @@
-export function formatPostDataExchange (data: object) {
+export function formatExchangeServerFormat (data: object) {
     let formattedData = {
         ...data,
         learningLanguageId: data.learningLanguage.id,

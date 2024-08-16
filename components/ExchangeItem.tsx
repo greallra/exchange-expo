@@ -76,7 +76,7 @@ const ExchangeItem = (props: ExchangeItemProps) => {
 
     
     return (
-      <Card status={getStatus()}>
+      <Card status={getStatus()} key={props.id}>
         <TouchableOpacity key={props.id} style={styles.layoutContainer} onPress={() => router.push(`/exchanges/view/${props.id}`)}>
               <View style={styles.leftCol}>
                 <View style={styles.icons}>

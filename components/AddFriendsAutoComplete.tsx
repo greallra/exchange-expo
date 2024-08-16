@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
-import { Avatar, Button, Layout, Popover, Autocomplete, AutocompleteItem, Text, Icon } from '@ui-kitten/components';
+import { Avatar, Button, Autocomplete, AutocompleteItem, Text, Icon } from '@ui-kitten/components';
 import useFetch from '@/hooks/useFetch';
 import LoadingButton from '@/components/LoadingButton'
 
 const filter = (user, query): boolean => user.username ? user.username.toLowerCase().includes(query.toLowerCase()) : false;
 
-const PopoverSimpleUsageShowcase = ({ visible, setVisible, loading, handleAddParticipant, exchange }): React.ReactElement => {
+const AddFriendsAutoComplete = ({ visible, setVisible, loading, handleAddParticipant, exchange }): React.ReactElement => {
     // Popover
     const { data: users } = useFetch('users')
     const [value, setValue] = React.useState(null);
@@ -41,11 +41,11 @@ const PopoverSimpleUsageShowcase = ({ visible, setVisible, loading, handleAddPar
         return exchangeLanguagesIds.includes(user.learningLanguageId) && exchangeLanguagesIds.includes(user.teachingLanguageId)
     }
 
-    const renderToggleButton = (): React.ReactElement => (
-        <Button onPress={() => setVisible(true)} size='tiny'>
-        {!visible ? 'Add Friends' : 'Close'}
-        </Button>
-    );
+    // const renderToggleButton = (): React.ReactElement => (
+    //     <Button onPress={() => setVisible(true)} size='tiny'>
+    //     {!visible ? 'Add Friends' : 'Close'}
+    //     </Button>
+    // );
 
     const renderOption = (item, index): React.ReactElement => (
         <AutocompleteItem
@@ -68,23 +68,7 @@ const PopoverSimpleUsageShowcase = ({ visible, setVisible, loading, handleAddPar
     
 
   return (
-    <Popover
-      visible={visible}
-      anchor={renderToggleButton}
-      onBackdropPress={() => setVisible(false)}
-      placement="left"
-      backdropStyle={styles.bStyle}
-      // fullWidth={true}
-      // style={{width: 300}}
-    >
-      {/* <Layout style={styles.content}>
-        <Avatar
-          style={styles.avatar}
-          source={{
-            uri: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-7.png'
-          }}
-        /> */}
-        <>  
+    <>
             <TouchableOpacity  onPress={() => setVisible(false)}>
               <Icon
                   style={styles.icon} 
@@ -109,8 +93,6 @@ const PopoverSimpleUsageShowcase = ({ visible, setVisible, loading, handleAddPar
                 {loading && <LoadingButton />}
             </View>}
         </>
-      {/* </Layout> */}
-    </Popover>
   );
 };
 
@@ -138,4 +120,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PopoverSimpleUsageShowcase;
+export default AddFriendsAutoComplete;

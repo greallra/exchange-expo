@@ -111,9 +111,6 @@ export async function updateOneDoc (collectionName: string, docId: string, data:
     return new Promise(async (resolve, reject) => {
         try {
           const ref = doc(FIREBASE_DB, collectionName, docId);
-          console.log('docId', docId);
-          console.log('data', data);
-          
           const response = await updateDoc(ref, data);
 
           resolve({
