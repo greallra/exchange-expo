@@ -7,22 +7,25 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setActivePage } from '@/features/header/headerSlice'
 
 import { useFocusEffect } from '@react-navigation/native';
-import { exchangeFormFields } from '@/common/formFields'
-import { formatExchangeServerFormat, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
+// import { exchangeFormFields } from '@/common/formFields'
+// import { formatExchangeServerFormat, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
 import { postDoc } from '@/firebase/apiCalls'
-import { validateForm } from '@/services/formValidation'
+// import { validateForm } from '@/services/formValidation'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
 import { Text, View, StyleSheet, ScrollView, } from "react-native";
 import { Text as KText, Spinner, Layout } from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 
+import { formatPostDataExchange, validateForm, esPostDoc, updateFormFieldsWithDefaultData, exchangeFormFieldsRN } from 'exchanges-shared'
+import { FIREBASE_DB } from "@/firebase/firebaseConfig";
+
 export default function CreateExchange (props) {
   const [isLoading, setIsLoading] = useState(false);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState([...exchangeFormFields])
+  const [fields, setFields] = useState([...exchangeFormFieldsRN])
   const { user } = useGlobalContext();
   const { languages } = useLanguages();
   const toast = useToast();
@@ -33,7 +36,7 @@ export default function CreateExchange (props) {
     useCallback(() => {
       
       dispatch(setActivePage({ activePage: 'Create an Exchange', leftside: 'arrow'}))
-      setFields(exchangeFormFields)
+      setFields(exchangeFormFieldsRN)
       toast.show("focus", { type: 'success', placement: "top" });
       // console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
     }, [])
@@ -41,51 +44,50 @@ export default function CreateExchange (props) {
   
   async function handleSubmit(stateOfChild: object) {
     try {
-
         setIsLoading(true)
-        console.log('stateOfChild', stateOfChild);
-        console.log('user', user);
-
-        const validationResponse = await validateForm('newExchange', stateOfChild)
+        const constructForm = {...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
+        const formFormatted = formatPostDataExchange(constructForm)
+        const validationResponse = await validateForm('newExchange', formFormatted)
         console.log('validationResponse', validationResponse);
-        // return  setIsLoading(false)
-        const data = formatExchangeServerFormat({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
-        console.log(data);
-        const colRef = await postDoc('exchanges', data)
-        // dispatch(cancelLoading())
-        console.log('colRef', colRef);
+        if (typeof validationResponse === 'string') {
+          toast.show('Erors in form', { type: 'error', placement: "top" });
+          setIsLoading(false)
+          setError(validationResponse);
+          setFormValid(false);
+          return
+        }
+        const colRef = await esPostDoc(FIREBASE_DB, 'exchanges', validationResponse)
         toast.show("Exchange created!", { type: 'success', placement: "top" });
         setIsLoading(false)
         router.push('/exchanges')
       } catch (error) {
-        // dispatch(cancelLoading())
         console.log(error);
-        // notifications.show({ color: 'red', title: 'Error', message: 'Error creating Exchange', })
+        toast.show('Error', { type: 'error', placement: "top" });
       }
   }
     async function handleValidateForm(form) { 
       // yup validation
 
-      const validationResponse = await validateForm('newExchange', form)
-      console.log('validationResponse', validationResponse);
-      // return console.log('form', form);
-      setError('');
-      setFormValid(true);
-      if (typeof validationResponse === 'string') {
-          setError(validationResponse);
-          setFormValid(false);
-          return
-      }
-      if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-      // success so make post api call possible
-      setError('');
-      setFormValid(true);
+      // const validationResponse = await validateForm('newExchange', form)
+      // console.log('validationResponse', validationResponse);
+      // // return console.log('form', form);
+      // setError('');
+      // setFormValid(true);
+      // if (typeof validationResponse === 'string') {
+      //     setError(validationResponse);
+      //     setFormValid(false);
+      //     return
+      // }
+      // if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
+      // // success so make post api call possible
+      // setError('');
+      // setFormValid(true);
     }
 
     useEffect(() => {
-      // console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
+    
       
-    }, [fields])
+    }, [])
 
     useEffect(() => {
       if (languages.length > 0) {
@@ -114,6 +116,7 @@ export default function CreateExchange (props) {
               error={error} 
               isLoading={isLoading}
               formValid={formValid}
+              overrideInlineValidationTemporaryProp={true}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
         }
         {error && <KText

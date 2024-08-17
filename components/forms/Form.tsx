@@ -17,6 +17,7 @@ interface FormProps {
     isLoading: boolean,
     modalVisible: boolean,
     setModalVisible: <T>(data: T) => void,
+    overrideInlineValidationTemporaryProp: boolean
 }
 
 const Form = (p: FormProps) => {
@@ -55,7 +56,7 @@ const Form = (p: FormProps) => {
                 value={state[field.property]}/>
         })}
         {!p.isLoading && <Button 
-            disabled={!p.formValid} 
+            disabled={!p.formValid && !p.overrideInlineValidationTemporaryProp} 
             onPress={() => p.onSubmit(state)}>
             Submit
         </Button>}

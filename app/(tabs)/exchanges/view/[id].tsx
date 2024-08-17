@@ -83,7 +83,7 @@ export default function ViewExchange({ navigation }) {
         return;
       } 
       const dataWithUpdatedParticipants = { participantIds: [...exchange.participantIds, joiningUser.id] }
-        // validation is giving back a location object for some reason, leave out for now
+      // validation is giving back a location object for some reason, leave out for now
       // const validationResponse = await validateFormForServer('exchange', dataWithUpdatedParticipants)
       // if (typeof validationResponse === 'string') {
       //   setIsLoading(false)
