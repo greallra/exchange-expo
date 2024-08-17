@@ -17,7 +17,7 @@ import { Text, View, StyleSheet, ScrollView, } from "react-native";
 import { Text as KText, Spinner, Layout } from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 
-import { formatPostDataExchange, validateForm, esPostDoc, updateFormFieldsWithDefaultData, exchangeFormFieldsRN } from 'exchanges-shared'
+import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDefaultData, exchangeFormFieldsRN } from 'exchanges-shared'
 import { FIREBASE_DB } from "@/firebase/firebaseConfig";
 
 export default function CreateExchange (props) {
@@ -56,7 +56,7 @@ export default function CreateExchange (props) {
           setFormValid(false);
           return
         }
-        const colRef = await esPostDoc(FIREBASE_DB, 'exchanges', validationResponse)
+        const colRef = await esAddDoc(FIREBASE_DB, 'exchanges', validationResponse)
         toast.show("Exchange created!", { type: 'success', placement: "top" });
         setIsLoading(false)
         router.push('/exchanges')

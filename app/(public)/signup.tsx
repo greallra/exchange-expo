@@ -5,15 +5,9 @@ import { Button, Input, Text as KText, Spinner, Layout } from '@ui-kitten/compon
 import { useEffect, useState } from 'react'
 import Form from '@/components/forms/Form'
 import useAuth from "@/hooks/useAuth";
-import { userFormFields } from '@/common/formFields'
-import { validateForm } from '@/services/formValidation'
-import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataSignup } from '@/common/formHelpers'
+import { userFormFieldsRN, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
 import useLanguages from '@/hooks/useLanguages';
 import { createUserWithEmailAndPassword, FIREBASE_DB, getAuth } from '@/firebase/firebaseConfig'
-import {
-    setDoc,
-    doc,
-  } from "firebase/firestore";
 import styles from '@/common/styles'
 
 const Signup = () => {
@@ -27,40 +21,48 @@ const Signup = () => {
   // const dispatch = useDispatch()
   async function handleSubmit(stateOfChild) {
     setLoading(true)
-    const data = formatPostDataSignup(stateOfChild)
-
+    setError('');
     try {
+        const formattedData = formatPostDataUser(stateOfChild)
+        const validationResponse = await validateForm('newUser', formattedData)
+
+        if (typeof validationResponse === 'string') {
+          setLoading(false)
+          setError(validationResponse);
+          setFormValid(false);
+          return
+        }
         const auth = getAuth();
         const userCredential = await createUserWithEmailAndPassword(auth, stateOfChild.email, stateOfChild.password)
-        console.log('userCredential', userCredential);
-        delete data.password
-        await setDoc(doc(FIREBASE_DB, "users", userCredential.user.uid), { id: userCredential.user.uid, ...data });
+        delete formattedData.password
+        await esAddUser (FIREBASE_DB, userCredential, 'users', formattedData)
+        setLoading(false)
       } catch (error) {
         // dispatch(cancelLoading())
         setLoading(false)
         console.log(error, typeof error, error.message);
         setError(error.message)
       }
-
 }
-async function handleValidateForm(form) {
-  const validationResponse = await validateForm('newUser', form)
-  setError('');
-  setFormValid(true);
-  if (typeof validationResponse === 'string') {
-      setError(validationResponse);
-      setFormValid(false);
-      return
-  }
-  if (typeof validationResponse !== 'object') {
-      setError('wrong yup repsonse type');
-      setFormValid(false);
-      return console.log('wrong yup repsonse type')
-  }
 
-  // success so make post api call possible
-  setError('');
-  setFormValid(true);
+async function handleValidateForm(form) {
+  // const validationResponse = await validateForm('newUser', form)
+  // setError('');
+  // setFormValid(true);
+  // if (typeof validationResponse === 'string') {
+  //     setError(validationResponse);
+  //     setFormValid(false);
+  //     return
+  // }
+  // if (typeof validationResponse !== 'object') {
+  //     setError('wrong yup repsonse type');
+  //     setFormValid(false);
+  //     return console.log('wrong yup repsonse type')
+  // }
+
+  // // success so make post api call possible
+  // setError('');
+  // setFormValid(true);
 }
 
 useEffect(() => {
@@ -69,7 +71,7 @@ useEffect(() => {
           // teachingLanguage: languages[Math.floor(Math.random() * languages.length)],
           // learningLanguage: languages[Math.floor(Math.random() * languages.length)],
       }
-      const updatedFields = updateFormFieldsWithDefaultData(userFormFields, defaultData, languages)
+      const updatedFields = updateFormFieldsWithDefaultData(userFormFieldsRN, defaultData, languages)
       
       setFormFields(updatedFields);
       setBusy(false)
@@ -89,6 +91,7 @@ useEffect(() => {
               error={error} 
               formValid={formValid}
               isLoading={loading}
+              overrideInlineValidationTemporaryProp={true}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>}
           {error &&  <KText
               status='danger'
