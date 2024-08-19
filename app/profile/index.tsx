@@ -5,21 +5,20 @@ import { useSelector, useDispatch } from 'react-redux'
 // import { useRoute } from '@react-navigation/native';
 import Header from '@/features/header/Header'
 import { Button, Spinner, Text as KText, Layout, Modal, Card } from '@ui-kitten/components';
-import { signOut, FIREBASE_AUTH } from '@/firebase/firebaseConfig';
+
+import { getFormFields, formatPostDataUser, validateForm, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData,
+  esUpdateDoc, esGetDoc, esDeleteDocs, checkForLanguageChange, esSetDoc, formatUserData } from 'exchanges-shared'
+import { FIREBASE_DB, FIREBASE_AUTH } from '@/firebase/firebaseConfig';
 import Form from '@/components/forms/Form'
-import { formatUserData } from '@/common/utils'
 
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 import { useFocusEffect } from '@react-navigation/native';
 import { setActivePage } from '@/features/header/headerSlice'
-import { userFormFields } from '@/common/formFields'
-import { validateForm } from '@/services/formValidation'
-import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatPostDataSignup } from '@/common/formHelpers'
 import { useToast } from "react-native-toast-notifications";
 import useLanguages from '@/hooks/useLanguages';
 import useAuth from "@/hooks/useAuth";
-import { setOneDoc, getOneDoc, deleteMultipleDocs } from '@/firebase/apiCalls'
+
 
 
 const Profile = () => {
@@ -28,7 +27,7 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [fields, setFields] = useState(userFormFields);
+  const [fields, setFields] = useState(getFormFields('user', 'RN'));
   const [busy, setBusy] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [languageChangeDocsDeleted, setLanguageChangeDocsDeleted] = useState(false);
@@ -49,7 +48,7 @@ const Profile = () => {
 
   async function deleteDocsThenSubmit (stateOfForm) {
     setLoading(true)
-    await deleteMultipleDocs ('exchanges', 'organizerId', user.id)
+    await esDeleteDocs (FIREBASE_DB, 'exchanges', 'organizerId', user.id)
     setLanguageChangeDocsDeleted(true);
     setTimeout(() => {
       handleSubmit(stateOfForm) 
@@ -58,27 +57,31 @@ const Profile = () => {
   
   }
 
-
-  function checkForLanguageChange(stateOfForm: Object): Boolean{
-    if (user.teachingLanguageId === stateOfForm.teachingLanguage.id && user.learningLanguageId === stateOfForm.learningLanguage.id) {
-      return false
-    } else {
-      return true
-    }
-  }
-
   async function handleSubmit(stateOfForm) {
     console.log(stateOfForm);
     setLoading(true)
+    setError('')
     try {
-        const isLanguageChange = checkForLanguageChange(stateOfForm)
+        const isLanguageChange = checkForLanguageChange(stateOfForm, user)
         if(isLanguageChange && !languageChangeDocsDeleted){
           setLoading(false)
           return setModalVisible(true)
         }
+        const formFormatted = formatPostDataUser(stateOfForm)
+        const validationResponse = await validateForm('editUser', formFormatted)
+        console.log('formFormatted', formFormatted);
+        console.log('validationResponse', validationResponse);
+        
+        if (typeof validationResponse === 'string') {
+          toast.show('Erors in form', { type: 'error', placement: "top" });
+          setLoading(false)
+          setError(validationResponse);
+          setFormValid(false);
+          return
+        }
         delete stateOfForm.password
-        const { error: updateError, response } = await setOneDoc('users', user.id, formatPostDataSignup({...stateOfForm, id: user.id}))
-        const { error: getOneDocErr, docSnap } = await getOneDoc('users', user.id)
+        const { error: updateError, response } = await esSetDoc(FIREBASE_DB, 'users', user.id, formatPostDataUser({...stateOfForm, id: user.id}))
+        const { error: getOneDocErr, docSnap } = await esGetDoc(FIREBASE_DB, 'users', user.id)
         if (updateError) {throw(updateError) }
         if (getOneDocErr) {throw(getOneDocErr) }
 
@@ -94,31 +97,19 @@ const Profile = () => {
         console.log('error', error);
         // dispatch(cancelLoading())
         setLoading(false)
-        toast.show("Profile updated!");
+        toast.show("catch err");
       }
   }
 
   async function handleValidateForm(form) { 
-    // yup validation
-    const validationResponse = await validateForm('editUser', form)
-    console.log(validationResponse);
-    setError('');
-    setFormValid(true);
-    if (typeof validationResponse === 'string') {
-        setError(validationResponse);
-        setFormValid(false);
-        return
-    }
-    if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-    // success so make post api call possible
-    setError('');
-    setFormValid(true);
+
   }
 
   useEffect(() => {
     if (languages.length > 0) {
         // saved data
         const dataUpdatedWithSaved = updateFormFieldsWithSavedData(fields, user)
+        
         // not really default data, its based on user data, maaybe change in future
         const defaultData = {
             teachingLanguage: languages.map( (lang,i) => ({...lang, index: i }) ).find( lang => lang.id === user.teachingLanguageId),
@@ -126,6 +117,14 @@ const Profile = () => {
         }
         
         let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData}, languages)
+        console.log('updatedFields', updatedFields);
+        // dirty fix, need to change
+        let teachingLanguageField = updatedFields.find( field => field.name === 'teachingLanguage')
+        let learningLanguageField = updatedFields.find( field => field.name === 'learningLanguage')
+      
+        teachingLanguageField.options = [...languages]
+        learningLanguageField.options = [...languages]
+        
         updatedFields = updatedFields.map( field => !['password', 'email'].includes(field.property) ? field : {...field, hideField: true} )
         setFields(updatedFields);
         setBusy(false)
@@ -149,6 +148,7 @@ const Profile = () => {
               isLoading={loading}
               modalVisible={modalVisible}
               setModalVisible={setModalVisible}
+              overrideInlineValidationTemporaryProp={true}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
         }
         {error && <KText

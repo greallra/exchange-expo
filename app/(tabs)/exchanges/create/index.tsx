@@ -7,17 +7,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setActivePage } from '@/features/header/headerSlice'
 
 import { useFocusEffect } from '@react-navigation/native';
-// import { exchangeFormFields } from '@/common/formFields'
-// import { formatExchangeServerFormat, updateFormFieldsWithDefaultData } from '@/common/formHelpers'
 import { postDoc } from '@/firebase/apiCalls'
-// import { validateForm } from '@/services/formValidation'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
 import { Text, View, StyleSheet, ScrollView, } from "react-native";
 import { Text as KText, Spinner, Layout } from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 
-import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDefaultData, exchangeFormFieldsRN } from 'exchanges-shared'
+import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDefaultData, getFormFields } from 'exchanges-shared'
 import { FIREBASE_DB } from "@/firebase/firebaseConfig";
 
 export default function CreateExchange (props) {
@@ -25,7 +22,7 @@ export default function CreateExchange (props) {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState([...exchangeFormFieldsRN])
+  const [fields, setFields] = useState(getFormFields('exchange', 'RN'))
   const { user } = useGlobalContext();
   const { languages } = useLanguages();
   const toast = useToast();
@@ -36,7 +33,7 @@ export default function CreateExchange (props) {
     useCallback(() => {
       
       dispatch(setActivePage({ activePage: 'Create an Exchange', leftside: 'arrow'}))
-      setFields(exchangeFormFieldsRN)
+      setFields(getFormFields('exchange', 'RN'))
       toast.show("focus", { type: 'success', placement: "top" });
       // console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
     }, [])
@@ -44,6 +41,7 @@ export default function CreateExchange (props) {
   
   async function handleSubmit(stateOfChild: object) {
     try {
+        setError('');
         setIsLoading(true)
         const constructForm = {...stateOfChild, organizerId: user.id || user.uid, participantIds: [user.id || user.uid] }
         const formFormatted = formatPostDataExchange(constructForm)

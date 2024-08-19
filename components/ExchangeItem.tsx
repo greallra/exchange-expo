@@ -2,16 +2,9 @@ import { useState, useEffect } from 'react';
 import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Link, router } from 'expo-router';
 import { useGlobalContext } from "@/context/GlobalProvider";
-// import { useHover } from '@mantine/hooks';
-// import { Card, Image, Text, Badge, Button, Box, Group, Divider, Alert, Tooltip } from '@mantine/core';
-// import { IconMapPin, IconClock, IconUsers, IconPencil, IconUserCheck, IconChecks, IconFlagPause, IconFlagFilled, IconFlag, 
-//     IconBattery, IconBattery1, IconBattery2, IconBattery3, IconBattery4, IconPointer, IconBrain } from '@tabler/icons-react';
-
-// import UserFlag from '@/components/UserFlag'
-// import AvatarGroup from '../components/AvatarGroup'
 import { Card, Layout, Text as Ktext, Icon, Divider } from '@ui-kitten/components';
 import { images } from '@/constants'
-import { parseLocation } from '@/common/utils'
+import { parseLocation } from "exchanges-shared"
 
 
 interface ExchangeItemProps {

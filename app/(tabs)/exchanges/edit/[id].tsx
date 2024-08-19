@@ -6,14 +6,15 @@ import useLanguages from '@/hooks/useLanguages';
 import { setActivePage } from '@/features/header/headerSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import { exchangeFormFields } from '@/common/formFields'
-import { updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, formatExchangeServerFormat, getIndexOfAvailableValues } from '@/common/formHelpers'
-import { setOneDoc, getOneDoc } from '@/firebase/apiCalls'
-import { validateForm, validateFormForServer } from '@/services/formValidation'
+import { formatPostDataExchange, updateFormFieldsWithDefaultData, updateFormFieldsWithSavedData, getIndexOfAvailableValues,
+  esSetDoc, esGetDoc, validateForm, getFormFields
+} from 'exchanges-shared'
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Form from '@/components/forms/Form'
 import { useToast } from "react-native-toast-notifications";
 
 import { Text as KText, Spinner, IndexPath, Layout } from '@ui-kitten/components';
+import { FIREBASE_DB } from "@/firebase/firebaseConfig";
 
 export default function EditExchange() {
   // const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function EditExchange() {
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
   const [formValid, setFormValid] = useState(false);
-  const [fields, setFields] = useState([...exchangeFormFields])
+  const [fields, setFields] = useState(getFormFields('exchange', 'RN'))
   const { user } = useGlobalContext();
   const { languages } = useLanguages();
 
@@ -38,13 +39,16 @@ export default function EditExchange() {
 
   async function handleSubmit(stateOfChild: object) {
     try {
-        // dispatch(setLoading())
+        setError('');
         setIsLoading(true)
-        const dataServerFormat = formatExchangeServerFormat({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
-        const validationResponse = await validateFormForServer('exchange', dataServerFormat)
+        const formFormatted = formatPostDataExchange({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
+        const validationResponse = await validateForm('editExchange', formFormatted)
+        console.log('validationResponse', validationResponse);
         if (typeof validationResponse === 'string') {
-          setIsLoading(false)
           toast.show("Error updating exchange!" + " " + validationResponse, { type: 'error', placement: "top" });
+          setIsLoading(false)
+          setError(validationResponse);
+          setFormValid(false);
           return
         }
         const colRef = await setOneDoc('exchanges', id, validationResponse)
@@ -59,25 +63,13 @@ export default function EditExchange() {
   }
 
   async function handleValidateForm(form) { 
-    // yup validation
-    const validationResponse = await validateForm('newExchange', form)
-    setError('');
-    setFormValid(true);
-    if (typeof validationResponse === 'string') {
-        setError(validationResponse);
-        setFormValid(false);
-        return
-    }
-    if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-    // success so make post api call possible
-    setError('');
-    setFormValid(true);
+  
   }
 
   function fetchData() {
       if (languages.length > 0) {
         // saved data
-        getOneDoc("exchanges", id)
+        esGetDoc(FIREBASE_DB, "exchanges", id)
         .then(({docSnap}) => {
           try {
             console.log(docSnap);

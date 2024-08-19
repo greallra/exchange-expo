@@ -1,7 +1,7 @@
 // import { Avatar, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { exchange, user } from '@/common/types';
-import { getUserInitials } from '@/common/utils'
+import { getUserInitials } from 'exchanges-shared'
 import { Layout, Spinner, Text as KText, Divider, Avatar } from '@ui-kitten/components';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { icons, images } from '@/constants'

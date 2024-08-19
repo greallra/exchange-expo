@@ -3,13 +3,7 @@ import { useState, useEffect } from 'react';
 import { FIREBASE_AUTH, onAuthStateChanged, FIREBASE_DB } from "@/firebase/firebaseConfig"
 import useLanguages from '@/hooks/useLanguages';
 import { getOneDoc } from "@/firebase/apiCalls"
-import { formatUserData } from '@/common/utils'
-// import {
-//   collection,
-//   onSnapshot,
-//   doc
-// } from "firebase/firestore";
-// import _ from 'lodash';
+import { appendAuthDataToUser, esGetDoc, formatUserData } from 'exchanges-shared'
 
 function useAuth() {
   const [user, setUser] = useState(null);
@@ -24,23 +18,15 @@ function useAuth() {
           setLoading(false)
           return setUser(null)
         }
-        let userDataFromAuth = {
-          id: user.uid,
-          uid: user.uid,
-          accessToken: user.accessToken,
-          email: user.email,
-          // metadata: user.metadata,
-          phoneNumber: user.phoneNumber,
-          displayName: user.displayName,
-        }
+        const userData = appendAuthDataToUser(user)
    
    
-        getOneDoc ('users', user.uid)
+        esGetDoc (FIREBASE_DB, 'users', user.uid)
         .then(({docSnap}) => {
 
-          const combinedAuthAndCollection = {...userDataFromAuth, ...docSnap.data()}     
-          console.log('languages', languages);
-          console.log('combinedAuthAndCollection', formatUserData(combinedAuthAndCollection, languages));
+          const combinedAuthAndCollection = {...userData, ...docSnap.data()}  
+          console.log('combinedAuthAndCollection', combinedAuthAndCollection);
+          
           setUser(formatUserData(combinedAuthAndCollection, languages))
           setTimeout(() => setUserReady(true))
           setLoading(false)

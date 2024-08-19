@@ -11,7 +11,7 @@ import { StyleSheet, Text, View, Image, TouchableWithoutFeedback, ScrollView, Pl
 import { Input, Layout, Select, SelectItem, Datepicker, Icon, Radio, RadioGroup, Text as KText, Avatar, Button } from '@ui-kitten/components';
 import { Link } from 'expo-router'
 import styles from "@/common/styles"
-import { parseLocation } from "@/common/utils"
+import { parseLocation } from "exchanges-shared"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { images } from '@/constants'
@@ -153,8 +153,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             selectedIndex={p.value && p.value.index}
             onChange={index => handleDirectChange(p.options.find( option => option.index === index))}
         >
-               
-            {p.options.map( option => <Radio key={option} status='warning'>{option.name}</Radio>)}
+            {p.options.map( option => <Radio key={option.index} status='warning'>{option.name}</Radio>)}
         </RadioGroup>
         </>)}  
         {p.type === 'datetime' && Platform.OS === 'ios' &&

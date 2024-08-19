@@ -7,10 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux'
 import { setActivePage } from '@/features/header/headerSlice'
 import { useFocusEffect } from '@react-navigation/native';
-
-
-import { nextTenDays, timeFilterExchanges } from '@/common/timeHelpers'
-import { formatExchange } from "@/common/utils"
+import { timeFilterExchanges, nextTenDays, formatExchange } from 'exchanges-shared'
 
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import { Button, List, ListItem, Icon, Text as KText, Divider, IconElement, Tab, TabBar, TabBarProps, CheckBox, CheckBoxProps, Layout } from '@ui-kitten/components';
@@ -23,7 +20,7 @@ export default function Exchanges() {
   const { data: users } = useFetch('users')
   let { data: exchanges } = useFetch('exchanges')
   const { user } = useGlobalContext();
-
+  
   // tabs 
   // const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   //   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -105,26 +102,7 @@ export default function Exchanges() {
    return (
     <>  
       <Layout style={styles.container} level='2'>
-          {/* <div className='filter-switch'>
-              <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Native Language is: </Text> {user && <UserFlag src={user.teachingLanguageUnfolded.smallFlag}/>}</Box>
-              <Box className='flex-sb'><Text tt="italic" size="xs" c="dimmed">Your Learning Language is: </Text> {user && <UserFlag src={user.learningLanguageUnfoled.smallFlag}/>}</Box>
-              <Switch mt="xs" defaultChecked={false} label="Target my Languages"  checked={isMyLanguages}
-                  onChange={(event) => setIsMyLanguages(event.currentTarget.checked)}/>
-              <Switch defaultChecked={false} label="Show attending" className='mt-1'  checked={isAttending}
-                  onChange={(event) => setIsAttending(event.currentTarget.checked)}/>
-          </div>
-          <div className='info-corner'>
-          <Tooltip label="This means an exchange matches your languages">
-              <Box className='flex-al'>
-              <IconChecks style={{ width: '15px', height: '15px', marginRight: '5px' }}  stroke={4.0} color='green'/> =
-              <Text ml="xs"  size="sm" fw={700}>Language Match</Text>
-          </Box></Tooltip>
-          </div> */}
-          {/* <TabBar {...topState} style={{ padding: 0}}>
-            <Tab icon={<Icon name='people-outline' />} title="All Exchanges" style={{ padding: 0}}/>
-            <Tab icon={<Icon name='globe-outline' />} title="Map View" style={{ padding: 0}}/>
-            <Tab icon={<Icon name='person-outline' />} title="My Exchanges" style={{ padding: 0}}/>
-          </TabBar> */}
+
           <View style={[styles.fc, { marginBottom: 10 }]}>
             <CheckBox style={styles.checkbox} status='warning' {...isMyLanguages}>
               <KText category='h1'>My Languages</KText>

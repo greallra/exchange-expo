@@ -5,15 +5,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useLocalSearchParams, Link } from 'expo-router';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { images } from '@/constants'
-import { checkUserIsValidToJoin, esUpdateDoc } from 'exchanges-shared'
 import { FIREBASE_DB } from '@/firebase/firebaseConfig';
 // C
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Button, List, ListItem, Icon, Layout, Spinner, Text as KText, Divider, Avatar, Modal, Card,} from '@ui-kitten/components';
 import { useToast } from "react-native-toast-notifications";
 import AvatarItem from '@/components/AvatarItem'
-import { formatExchange, safeParse, parseLocation, safeImageParse } from '@/common/utils'
-import { getOneDoc, setOneDoc, updateOneDoc } from '@/firebase/apiCalls'
+import { safeImageParse } from '@/common/utils'
+import { formatExchange , esGetDoc, esUpdateDoc, checkUserIsValidToJoin, safeParse, parseLocation, } from 'exchanges-shared'
 import useFetch from '@/hooks/useFetch';
 import useFetchOne from '@/hooks/useFetchOne';
 import useLanguages from '@/hooks/useLanguages';
@@ -108,7 +107,7 @@ export default function ViewExchange({ navigation }) {
       setIsLoading(true)
       let participantsMeRemoved = [...exchange.participantIds]
       participantsMeRemoved.splice(participantsMeRemoved.indexOf(me.id), 1)
-      await updateOneDoc('exchanges', id, { participantIds: participantsMeRemoved});
+      await esUpdateDoc(FIREBASE_DB, 'exchanges', id, { participantIds: participantsMeRemoved});
       setIsLoading(false)
       toast.show(`You Have been removed from the Exchange`, { type: 'success', placement: "top" });
     } catch (error) {
@@ -119,7 +118,7 @@ export default function ViewExchange({ navigation }) {
 
   async function fetchData(id:string) {  
     try {
-      const {docSnap} = await getOneDoc("exchanges", id);
+      const {docSnap} = await esGetDoc(FIREBASE_DB, "exchanges", id);
       console.log('docSnap.data()', docSnap);
       try {
         const formattedExchange = formatExchange({...docSnap.data(), id: docSnap.id}, languages, users)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { formatLanguages } from '@/common/utils'
+import { formatLanguages } from 'exchanges-shared'
 import { getCollection } from '@/firebase/apiCalls';
 
 const useLanguages = () => {

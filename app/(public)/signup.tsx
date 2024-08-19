@@ -5,7 +5,7 @@ import { Button, Input, Text as KText, Spinner, Layout } from '@ui-kitten/compon
 import { useEffect, useState } from 'react'
 import Form from '@/components/forms/Form'
 import useAuth from "@/hooks/useAuth";
-import { userFormFieldsRN, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
+import { getFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
 import useLanguages from '@/hooks/useLanguages';
 import { createUserWithEmailAndPassword, FIREBASE_DB, getAuth } from '@/firebase/firebaseConfig'
 import styles from '@/common/styles'
@@ -23,7 +23,7 @@ const Signup = () => {
     setLoading(true)
     setError('');
     try {
-        const formattedData = formatPostDataUser(stateOfChild)
+        const formattedData = formatPostDataUser(stateOfChild)  
         const validationResponse = await validateForm('newUser', formattedData)
 
         if (typeof validationResponse === 'string') {
@@ -46,32 +46,24 @@ const Signup = () => {
 }
 
 async function handleValidateForm(form) {
-  // const validationResponse = await validateForm('newUser', form)
-  // setError('');
-  // setFormValid(true);
-  // if (typeof validationResponse === 'string') {
-  //     setError(validationResponse);
-  //     setFormValid(false);
-  //     return
-  // }
-  // if (typeof validationResponse !== 'object') {
-  //     setError('wrong yup repsonse type');
-  //     setFormValid(false);
-  //     return console.log('wrong yup repsonse type')
-  // }
-
-  // // success so make post api call possible
-  // setError('');
-  // setFormValid(true);
+  
 }
 
 useEffect(() => {
   if (languages.length > 0) {
       const defaultData = {
-          // teachingLanguage: languages[Math.floor(Math.random() * languages.length)],
-          // learningLanguage: languages[Math.floor(Math.random() * languages.length)],
+          teachingLanguage: languages[Math.floor(0)],
+          learningLanguage: languages[Math.floor(1)],
       }
-      const updatedFields = updateFormFieldsWithDefaultData(userFormFieldsRN, defaultData, languages)
+      const updatedFields = updateFormFieldsWithDefaultData(getFormFields('user', 'RN'), defaultData, languages)
+      // dirty fix, need to change
+      let teachingLanguageField = updatedFields.find( field => field.name === 'teachingLanguage')
+      let learningLanguageField = updatedFields.find( field => field.name === 'learningLanguage')
+    
+      teachingLanguageField.options = [...languages]
+      teachingLanguageField.value.index = 0
+      learningLanguageField.value.index = 1
+      learningLanguageField.options = [...languages]
       
       setFormFields(updatedFields);
       setBusy(false)
