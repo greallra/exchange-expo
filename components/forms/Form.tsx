@@ -1,10 +1,11 @@
-import { Button, IndexPath, Spinner, Text as KText } from '@ui-kitten/components';
+import { Button, IndexPath, Spinner, Text as KText, Card } from '@ui-kitten/components';
 import { KittenModal } from '@/components/KittenModal'
 import { useState, useEffect, useImperativeHandle } from 'react';
 import FormField from './FormField'
 import { Text, View, ScrollView, StyleSheet, SafeAreaView } from "react-native";
 import styles from "@/common/styles"
 import LoadingButton from "@/components/LoadingButton"
+import ErrorBox from "@/components/ErrorBox"
 
 interface FormProps {
     fields: Array<FormFieldProps>,
@@ -16,8 +17,7 @@ interface FormProps {
     user: object,
     isLoading: boolean,
     modalVisible: boolean,
-    setModalVisible: <T>(data: T) => void,
-    overrideInlineValidationTemporaryProp: boolean
+    setModalVisible: <T>(data: T) => void
 }
 
 const Form = (p: FormProps) => {
@@ -55,8 +55,8 @@ const Form = (p: FormProps) => {
                 onChange={(property: string, value: string | boolean | number) => handleChange(property, value)} 
                 value={state[field.property]}/>
         })}
+        {p.error && <ErrorBox error={p.error} />}
         {!p.isLoading && <Button 
-            disabled={!p.formValid && !p.overrideInlineValidationTemporaryProp} 
             onPress={() => p.onSubmit(state)}>
             Submit
         </Button>}
@@ -75,5 +75,4 @@ const Form = (p: FormProps) => {
     
     </ScrollView>
 }
-
 export default Form;

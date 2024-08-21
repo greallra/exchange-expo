@@ -7,6 +7,7 @@ import styles from '@/common/styles'
 // import { setLoading } from '@/features/loading/loadingSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import LoadingButton from "@/components/LoadingButton"
+import ErrorBox from "@/components/ErrorBox"
 
 import { Button, Input, Text as Ktext, Spinner, Layout } from '@ui-kitten/components';
 import { PasswordInput } from '@/components/forms/PasswordInput'
@@ -54,10 +55,7 @@ const Login = () => {
               onChangeText={nextValue => setEmail(nextValue)}
             />
             <PasswordInput value={password} setValue={nextValue => setPassword(nextValue)}/>
-            {error && <Ktext
-              style={styles.text}
-              status='danger'
-            >{error}</Ktext>} 
+            {error && <ErrorBox error={error}/>} 
             {!loading &&<Button 
               style={{marginTop: 20, marginBottom: 20}}
               disabled={loading} 

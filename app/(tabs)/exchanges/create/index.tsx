@@ -64,22 +64,7 @@ export default function CreateExchange (props) {
       }
   }
     async function handleValidateForm(form) { 
-      // yup validation
 
-      // const validationResponse = await validateForm('newExchange', form)
-      // console.log('validationResponse', validationResponse);
-      // // return console.log('form', form);
-      // setError('');
-      // setFormValid(true);
-      // if (typeof validationResponse === 'string') {
-      //     setError(validationResponse);
-      //     setFormValid(false);
-      //     return
-      // }
-      // if (typeof validationResponse !== 'object') { setError('wrong yup repsonse type'); setFormValid(false); return alert('wrong yup repsonse type')}
-      // // success so make post api call possible
-      // setError('');
-      // setFormValid(true);
     }
 
     useEffect(() => {
@@ -114,12 +99,8 @@ export default function CreateExchange (props) {
               error={error} 
               isLoading={isLoading}
               formValid={formValid}
-              overrideInlineValidationTemporaryProp={true}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
         }
-        {error && <KText
-          status='danger'
-        >{error}</KText>} 
     </ScrollView>
   </Layout>)
 }

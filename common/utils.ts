@@ -15,20 +15,23 @@ export function getImage(path) {
 
 export function safeImageParse (property: string, obj: object) {
     try {
-        console.log('1')
         if (!property || !obj) {
+            console.log('1')
             return images.empty
         }
         if (typeof value === 'string') {
+            console.log('2')
             return images.empty
         }
         if (property === 'teachingLanguageUnfolded' || property === 'learningLanguageUnfolded' &&
             obj[property] && obj[property].name
         ) { 
+            console.log('3', obj)
             let name = obj[property].name
             return images[name.toLowerCase()]
         } 
     } catch (error) {
+        console.log('4')
         console.log(error.message);
 
         return images.empty

@@ -21,6 +21,12 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
     },
+    errorBox: {
+        margin:  10,
+    },
+    errorText: {
+        padding:  10,
+    }
 });
 
 export default styles

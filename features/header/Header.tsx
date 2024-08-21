@@ -20,7 +20,7 @@ const Header = () => {
     console.log('user2 header', user2)
 
     function getUserAvatar() {
-        return user2.gender === 0 ? images.maleAvatar : images.femaleAvatar
+        return user.gender === 0 ? images.maleAvatar : images.femaleAvatar
     }
     
 
@@ -37,17 +37,17 @@ const Header = () => {
         <Ktext  category='s1' style={{ marginTop: 0 }}>{ headerState.activePage ? headerState.activePage : 'Page Title' }</Ktext>
         {__DEV__ && <Ktext style={styles.userNameDev}>{user.username}</Ktext>}
         <Link href="/profile">
-            {user2 &&
+            {user &&
                 <>
                 
                 <>
-                    <Avatar source={safeImageParse('teachingLanguageUnfolded', user2)}   size='tiny' />
+                    <Avatar source={safeImageParse('teachingLanguageUnfolded', user)}   size='tiny' />
                     <Avatar
                         style={styles.avatar}
                         size='medium'
                         source={getUserAvatar()}
                     />
-                    <Avatar source={safeImageParse('learningLanguageUnfolded', user2)}   size='tiny' />
+                    <Avatar source={safeImageParse('learningLanguageUnfolded', user)}   size='tiny' />
                 </>
                 </>
             }

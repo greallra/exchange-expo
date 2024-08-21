@@ -11,9 +11,7 @@ const { user, login, logout, loading } = useAuth()
 
   useEffect(() => {
 
-    console.log('GlobalContext user', user);
-    console.log('GlobalContext loading', user);
-    
+    // console.log('GlobalContext user', user);
     
   }, [user, loading]);
 

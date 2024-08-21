@@ -152,7 +152,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
             style={{ display: 'flex', flexDirection: 'row', padding: 0}}
             selectedIndex={p.value && p.value.index}
             onChange={index => handleDirectChange(p.options.find( option => option.index === index))}
-        >
+        >         
             {p.options.map( option => <Radio key={option.index} status='warning'>{option.name}</Radio>)}
         </RadioGroup>
         </>)}  

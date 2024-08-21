@@ -117,13 +117,13 @@ const Profile = () => {
         }
         
         let updatedFields = updateFormFieldsWithDefaultData(fields, {...dataUpdatedWithSaved, ...defaultData}, languages)
-        console.log('updatedFields', updatedFields);
+        console.log('updatedFields', languages);
         // dirty fix, need to change
         let teachingLanguageField = updatedFields.find( field => field.name === 'teachingLanguage')
         let learningLanguageField = updatedFields.find( field => field.name === 'learningLanguage')
       
-        teachingLanguageField.options = [...languages]
-        learningLanguageField.options = [...languages]
+        teachingLanguageField.options = languages.map((lang,i) => ({...lang, index: i}))
+        learningLanguageField.options = languages.map((lang,i) => ({...lang, index: i}))
         
         updatedFields = updatedFields.map( field => !['password', 'email'].includes(field.property) ? field : {...field, hideField: true} )
         setFields(updatedFields);
@@ -148,12 +148,9 @@ const Profile = () => {
               isLoading={loading}
               modalVisible={modalVisible}
               setModalVisible={setModalVisible}
-              overrideInlineValidationTemporaryProp={true}
+              error={error}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
         }
-        {error && <KText
-          status='danger'
-        >{error}</KText>}
         <Button
           style={{margin: 2}}
           status='danger'

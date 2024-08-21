@@ -7,6 +7,7 @@ import Form from '@/components/forms/Form'
 import useAuth from "@/hooks/useAuth";
 import { getFormFields, updateFormFieldsWithDefaultData, formatPostDataUser, validateForm, esAddUser } from 'exchanges-shared'
 import useLanguages from '@/hooks/useLanguages';
+import { useToast } from "react-native-toast-notifications";
 import { createUserWithEmailAndPassword, FIREBASE_DB, getAuth } from '@/firebase/firebaseConfig'
 import styles from '@/common/styles'
 
@@ -17,6 +18,7 @@ const Signup = () => {
   const [formFields, setFormFields] = useState(false);
   const { languages } = useLanguages();
   const { login, setLoading, loading } = useAuth();
+  const toast = useToast();
 
   // const dispatch = useDispatch()
   async function handleSubmit(stateOfChild) {
@@ -30,6 +32,7 @@ const Signup = () => {
           setLoading(false)
           setError(validationResponse);
           setFormValid(false);
+          toast.show(validationResponse, { type: 'success', placement: "top" });
           return
         }
         const auth = getAuth();
@@ -83,12 +86,7 @@ useEffect(() => {
               error={error} 
               formValid={formValid}
               isLoading={loading}
-              overrideInlineValidationTemporaryProp={true}
           /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>}
-          {error &&  <KText
-              status='danger'
-            >{error}</KText>}
-            
           <KText
             appearance='hint'
             style={{ margin: 2, marginTop: 10, textAlign: 'center'}}

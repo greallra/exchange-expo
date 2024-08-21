@@ -27,7 +27,7 @@
     "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/eva-icons": "^5.3.1",
     "date-fns": "^3.6.0",
-    "exchanges-shared": "^1.0.18",
+    "exchanges-shared": "^1.0.19",
     "expo": "~51.0.22",
     "expo-constants": "~16.0.2",
     "expo-device": "~6.0.2",

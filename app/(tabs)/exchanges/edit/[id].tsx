@@ -41,7 +41,7 @@ export default function EditExchange() {
     try {
         setError('');
         setIsLoading(true)
-        const formFormatted = formatPostDataExchange({...stateOfChild, organizerId: user.id, participantIds: [user.id] })
+        const formFormatted = formatPostDataExchange({...stateOfChild, organizerId: user.id, participantIds: [user.id], id: id })
         const validationResponse = await validateForm('editExchange', formFormatted)
         console.log('validationResponse', validationResponse);
         if (typeof validationResponse === 'string') {
@@ -51,7 +51,7 @@ export default function EditExchange() {
           setFormValid(false);
           return
         }
-        const colRef = await setOneDoc('exchanges', id, validationResponse)
+        const colRef = await esSetDoc(FIREBASE_DB, 'exchanges', id, validationResponse)
         toast.show("Exchange updated!", { type: 'success', placement: "top" });
         setIsLoading(false)
         router.push('/exchanges')
@@ -130,10 +130,6 @@ export default function EditExchange() {
             isLoading={isLoading}
         /> : <View style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Spinner status='warning' /></View>
       }
-      {error && <KText
-        status='danger'
-      >{error}</KText>}
-      
   </ScrollView>
 </Layout>
 )
