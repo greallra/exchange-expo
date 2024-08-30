@@ -1,8 +1,6 @@
 import { router } from "expo-router";
 import { useEffect, useState, useContext, useCallback } from "react";
 import useLanguages from '@/hooks/useLanguages';
-// import { useSelector, useDispatch } from 'react-redux'
-// import { setLoading, cancelLoading } from '@/features/loading/loadingSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import { setActivePage } from '@/features/header/headerSlice'
 
@@ -18,6 +16,7 @@ import { formatPostDataExchange, validateForm, esAddDoc, updateFormFieldsWithDef
 import { FIREBASE_DB } from "@/firebase/firebaseConfig";
 
 export default function CreateExchange (props) {
+  const [theKey, setTheKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
@@ -38,6 +37,7 @@ export default function CreateExchange (props) {
       // console.log('exchangeFormFields', JSON.stringify(exchangeFormFields, null, 2))
     }, [])
   );
+  useFocusEffect(useCallback(() => { setTheKey(Math.random()); } , []))
   
   async function handleSubmit(stateOfChild: object) {
     try {

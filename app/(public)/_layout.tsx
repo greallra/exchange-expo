@@ -8,9 +8,6 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 
 export default function PublicLayout() {
   const { loading, user } = useGlobalContext();
-
-
-
   if (!loading && user) return <Redirect href="/exchanges" />;
  
   return (

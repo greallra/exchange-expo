@@ -99,6 +99,7 @@ const FormField = (p: FormFieldProps, outputProps) => {
         {p.type === 'select' &&   <Select
             placeholder='Default'
             label={p.label}
+            disabled={p.disabled}
             value={p.value.value}
             selectedIndex={p.value.selectedValue}
             onSelect={(index: IndexPath) => handleDirectChange({ selectedValue: index, value: p.availableValues[index.row] } )}

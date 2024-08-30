@@ -12,6 +12,7 @@ import { timeFilterExchanges, nextTenDays, formatExchange } from 'exchanges-shar
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import { Button, List, ListItem, Icon, Text as KText, Divider, IconElement, Tab, TabBar, TabBarProps, CheckBox, CheckBoxProps, Layout } from '@ui-kitten/components';
 import ExchangeItem from '@/components/ExchangeItem';
+import Loader from '@/components/Loader'
 
 export default function Exchanges() {
   const [loading, setLoading] = useState(true)
@@ -116,7 +117,7 @@ export default function Exchanges() {
           </View>
           <Divider style={{ marginVertical: 5, paddingVertical: 0.5, height: 1, backgroundColor: '#C5CEE0'}}/>
           <ScrollView>
-          {exchangesGroupedByDate.length ===  0 &&  <KText category='h1' status='success'>No Exchanges in DB :-(</KText>}
+          {exchangesGroupedByDate.length ===  0 && <Loader isLoading={loading} />}
           {exchangesGroupedByDate.length > 0 && exchangesGroupedByDate.map((groupedExchange, i) => {
               const areGroupedExchanges = groupedExchange.exchanges.length > 0 
               return (

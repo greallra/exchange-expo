@@ -1,20 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 
-
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
 const GlobalProvider = ({ children }) => {
 const { user, login, logout, loading } = useAuth()
-
-
   useEffect(() => {
-
     // console.log('GlobalContext user', user);
-    
   }, [user, loading]);
-
 
   return (
     <GlobalContext.Provider

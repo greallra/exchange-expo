@@ -14,8 +14,6 @@ const useFetchOne = (collectionName: string, docId: string) => {
     useEffect(() => {
         const unsub = onSnapshot(doc(FIREBASE_DB, collectionName, docId), (doc) => {
             const source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-            console.log('xxx ', doc.data());
-            console.log(source, " data: ", doc.data());
             setData(doc.data())
           });
     }, [])

@@ -5,7 +5,8 @@ import { getUserInitials } from 'exchanges-shared'
 import { Layout, Spinner, Text as KText, Divider, Avatar } from '@ui-kitten/components';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { icons, images } from '@/constants'
-import { updateOneDoc } from '@/firebase/apiCalls'
+import { esUpdateDoc } from 'exchanges-shared'
+import { FIREBASE_DB } from '@/firebase/firebaseConfig';
 import { useToast } from "react-native-toast-notifications";
 
 interface propsAvatarItem {
@@ -53,7 +54,7 @@ export default function AvatarItem({ me, user, exchange, teachingLanguage, amVal
         }
         const updatedParticipants = exchange.participantIds.filter ( id => id !== userId)
         try {
-            const response = await updateOneDoc ('exchanges', exchange.id, { participantIds: updatedParticipants })
+            const response = await esUpdateDoc (FIREBASE_DB, 'exchanges', exchange.id, { participantIds: updatedParticipants })
         } catch (error) {
             console.log('error', error);
         }  
